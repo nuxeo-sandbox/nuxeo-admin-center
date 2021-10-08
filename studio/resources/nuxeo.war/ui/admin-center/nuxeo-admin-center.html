@@ -1,45 +1,235 @@
-<!--
-`nuxeo-admin-center`
-@group Nuxeo UI
-@element nuxeo-admin-center
--->
 <dom-module id="nuxeo-admin-center">
   <template>
-    <style include="nuxeo-styles"></style>
+    <style include="iron-flex iron-flex-alignment nuxeo-styles">
+    nuxeo-dialog {
+      max-width: 500px;
+    }
 
-    <paper-input id='title' role="widget" value="{{document.properties.dc:title}}" label="Title"></paper-input>
+    .confirmPrompt {
+      font-size: larger;
+    }
 
-    <paper-textarea id='description' role="widget" value="{{document.properties.dc:description}}" label="Description"></paper-textarea>
+    /* Work-around milalignment of the OK button */
+    .buttons {
+      padding-right: 24px;
+      padding-bottom: 12px;
+    }
+
+    .progressDiv {
+      width: 80%;
+      margin-left: 24px;
+    }
+    </style>
+
+    <iron-ajax id="callAjax"
+               url="[[url]]"
+               method="[[method]]"
+               on-response="_ajaxCallSuccess"
+               on-error="_ajaxCallFailure">
+    </iron-ajax>
+
+    <nuxeo-page>
+
+      <div slot="header">
+        <h3>Admin Center</h3>
+      </div>
+
+      <div class="content">
+
+        <nuxeo-card heading="Operations">
+          <div class="layout horizontal justified flex wrap">
+            <paper-button id="cleanOrphanBinariesButton"
+                          raised noink
+                          on-tap="_cleanOrphanBinaries">
+              Clean Orphan Binaries
+            </paper-button>
+
+            
+            <paper-button id="getDistributionButton"
+                          raised noink
+                          on-tap="_getDistribution">
+              Clean Orphan Binaries
+            </paper-button>
+          </div>
+        </nuxeo-card>
+
+      </div>
+
+      <!-- Confirm dialog for the misc actions -->
+      <nuxeo-dialog id="confirmDialog" with-backdrop>
+        <div class="confirmPrompt">
+          [[confirmPrompt]]
+        </div>
+        <div class="confirmInfo">
+          [[confirmInfo]]
+        </div>
+
+        <paper-progress id="progress"
+                        class="progressDiv"
+                        style="display: [[displayProgressStyle]]"
+                        indeterminate
+                        disabled>
+        </paper-progress>
+
+        <div class="buttons">
+          <paper-button dialog-dismiss class="secondary" on-click="_confirmCancel">Cancel</paper-button>
+          <paper-button on-click="_confirmOk" class="primary">[[confirmOkLabel]]</paper-button>
+        </div>
+      </nuxeo-dialog>
+
+      <!-- Display the result of the action, if needed -->
+      <nuxeo-dialog id="resultDialog" with-backdrop>
+        <h3>Result for <span style="font-style:  italic">[[confirmAction]]</span></h3>
+        <paper-textarea value="[[resultActionDetails]]" readonly></paper-textarea>
+        <div class="buttons" style="float: right;">
+          <paper-button dialog-dismiss class="primary" on-click="_resultDialogClosed">Ok</paper-button>
+        </div>
+      </nuxeo-dialog>
+
+    </nuxeo-page>
 
   </template>
 
   <script>
+    const CLEAN_ORPHAN_BINARIES = "Clean Orphan Binaries";
+    const GET_DISTRIBUTION = "Nuxeo Distribution";
+
     Polymer({
       is: 'nuxeo-admin-center',
       behaviors: [Nuxeo.LayoutBehavior],
       properties: {
-        title: {
+        confirmAction: String,
+        confirmPrompt: String,
+        confirmInfo: String,
+        url: String,
+        method: String,
+        confirmOkLabel: {
           type: String,
-          value: 'Title'
+          value: "Ok"
         },
+        displayProgressStyle: {
+          type: String,
+          value: "none"
+        },
+        progressTimer: {
+          type: Number,
+          value: Date.now()
+        }
+      },
+      
+      // ====================> Clean orphan binaries
+      _cleanOrphanBinaries: function() {
+        this.confirmAction = CLEAN_ORPHAN_BINARIES;
+        this.confirmPrompt = "Clean up orphan binaries?";
+        this.confirmInfo = "This is a synchronous call, it can take time if there are a lot of orphan binaries: Be patient (and monitor server.log fo errors)";
+        this.confirmOkLabel = "Clean up";
 
-        //You can use either @schema or @doctype annotation in your model
-        /**
-         * @schema dublincore
-         */
-        document: {
-          type: Object
+        this.url = "/nuxeo/api/v1/management/binaries/orphaned";
+        this.method = "DELETE";
+
+        this.$.confirmDialog.toggle();
+      },
+
+      _cleanOrphanBinariesResponse: function(evt, req) {
+        this.resultActionDetails = JSON.stringify(evt.detail.response, null, 2);
+        this.$.resultDialog.toggle();
+      },
+
+      // ====================> Get Nuxeo distribution
+      _getDistribution: function() {
+        this.confirmAction = GET_DISTRIBUTION;
+        this.confirmPrompt = "Get Nuxeo Distribution?";
+        this.confirmInfo = "";
+        this.confirmOkLabel = "Ok";
+
+        this.url = "/nuxeo/api/v1/management/distribution";
+        this.method = "GET";
+
+        this.$.confirmDialog.toggle();
+      },
+
+      // ====================> Success/Failure of the ajax call
+      // Impossible ti get the result dialog displayed, nor the page
+      // correctlmy refreshed. I believe the error occuring breaks
+      // and maybe bubbles something.
+      // => Simple alert, and the a reload()
+      _ajaxCallFailure: function(evt, req) {
+        alert("An error occured:\n\n" + evt.detail.error.stack);
+        this._cleanupConfirmDialog();
+        location.reload();
+      },
+
+      // When the call is succesful, but too fast, we let the progress a little bit
+      _ajaxCallSuccess: function(evt, req) {
+
+        let reminder = 3000 - (Date.now() - this.progressTimer);
+        if(reminder > 500) {
+          setTimeout(function() {
+            this._ajaxCallSuccessRun(evt, req);
+          }.bind(this), reminder);
+        } else {
+          this._ajaxCallSuccessRun(evt, req);
         }
       },
 
-      _title: function() {
-        return this.document.properties['dc:title'];
+      _ajaxCallSuccessRun: function(evt, req) {
+
+        switch (this.confirmAction) {
+        case CLEAN_ORPHAN_BINARIES:
+          this._cleanOrphanBinariesResponse(evt, req);
+          break;
+
+        case GET_DISTRIBUTION:
+          debugger;
+          break;
+
+        default:
+          this._cleanupConfirmDialog();
+          break;
+        }
       },
 
-      _setTitle: function() {
-        this.$.title.label = this._title;
-      }
+      // ====================> Confirm and result dialogs handling
+      _cleanupConfirmDialog: function() {
+        this.confirmAction = null;
+        this.confirmPrompt = null;
+        this.confirmInfo = "";
+        this.confirmOkLabel = "Ok";
+        this.resultActionDetails = null;
 
+        this.url = null;
+        this.method = null;
+
+        this.displayProgressStyle = "none";
+        this.$.progress.disabled = true;
+
+        this.$.confirmDialog.close();
+      },
+
+      _confirmCancel: function() {
+        this._cleanupConfirmDialog();
+      },
+
+      _confirmOk: function() {
+        this.$.progress.disabled = false;
+        this.displayProgressStyle = "";
+        this.progressTimer = Date.now();
+
+        switch (this.confirmAction) {
+        case CLEAN_ORPHAN_BINARIES:
+        case GET_DISTRIBUTION:
+          this.$.callAjax.generateRequest();
+          break;
+
+        default:
+          this._cleanupConfirmDialog();
+          break;
+        }
+      },
+
+      _resultDialogClosed: function() {
+        this._cleanupConfirmDialog();
+      }
     });
   </script>
 </dom-module>
