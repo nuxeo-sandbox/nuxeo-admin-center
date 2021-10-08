@@ -187,7 +187,11 @@
         },
         resultActionDetails: String,
         deleteOrphanedBinariesResult: Object,
-        distributionResult: Object
+        distributionResult: Object,
+        displayProgress: {
+          type: Boolean,
+          value: true
+        }
       },
       
       // ====================================
@@ -201,6 +205,8 @@
 
         this.url = "/nuxeo/api/v1/management/binaries/orphaned";
         this.method = "DELETE";
+
+        this.displayProgress = true;
 
         this.$.confirmDialog.toggle();
       },
@@ -235,6 +241,8 @@
 
         this.url = "/nuxeo/api/v1/management/distribution";
         this.method = "GET";
+
+        this.displayProgress = false;
 
         this.$.confirmDialog.toggle();
       },
@@ -313,6 +321,8 @@
         this.displayProgressStyle = "none";
         this.$.progress.disabled = true;
 
+        this.displayProgress = false;
+
         this.$.confirmDialog.close();
       },
 
@@ -321,9 +331,11 @@
       },
 
       _confirmOk: function() {
-        this.$.progress.disabled = false;
-        this.displayProgressStyle = "";
-        this.progressTimer = Date.now();
+        if(this.displayProgress) {
+          this.$.progress.disabled = false;
+          this.displayProgressStyle = "";
+          this.progressTimer = Date.now();
+        }
 
         switch (this.confirmAction) {
         case DELETE_ORPHANED_BINARIES:
