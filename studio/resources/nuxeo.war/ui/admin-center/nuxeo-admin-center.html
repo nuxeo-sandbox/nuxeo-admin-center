@@ -38,18 +38,7 @@
 
         <nuxeo-card heading="Operations">
           <div class="layout horizontal justified flex wrap">
-            <paper-button id="cleanOrphanBinariesButton"
-                          raised noink
-                          on-tap="_cleanOrphanBinaries">
-              Clean Orphan Binaries
-            </paper-button>
-
-            
-            <paper-button id="getDistributionButton"
-                          raised noink
-                          on-tap="_getDistribution">
-              Clean Orphan Binaries
-            </paper-button>
+            <paper-button id="cleanOrphanBinariesButton" raised noink on-tap="_cleanOrphanBinaries">Clean Orphan Binaries</paper-button>
           </div>
         </nuxeo-card>
 
@@ -92,7 +81,6 @@
 
   <script>
     const CLEAN_ORPHAN_BINARIES = "Clean Orphan Binaries";
-    const GET_DISTRIBUTION = "Nuxeo Distribution";
 
     Polymer({
       is: 'nuxeo-admin-center',
@@ -135,19 +123,6 @@
         this.$.resultDialog.toggle();
       },
 
-      // ====================> Get Nuxeo distribution
-      _getDistribution: function() {
-        this.confirmAction = GET_DISTRIBUTION;
-        this.confirmPrompt = "Get Nuxeo Distribution?";
-        this.confirmInfo = "";
-        this.confirmOkLabel = "Ok";
-
-        this.url = "/nuxeo/api/v1/management/distribution";
-        this.method = "GET";
-
-        this.$.confirmDialog.toggle();
-      },
-
       // ====================> Success/Failure of the ajax call
       // Impossible ti get the result dialog displayed, nor the page
       // correctlmy refreshed. I believe the error occuring breaks
@@ -177,10 +152,6 @@
         switch (this.confirmAction) {
         case CLEAN_ORPHAN_BINARIES:
           this._cleanOrphanBinariesResponse(evt, req);
-          break;
-
-        case GET_DISTRIBUTION:
-          debugger;
           break;
 
         default:
@@ -217,7 +188,6 @@
 
         switch (this.confirmAction) {
         case CLEAN_ORPHAN_BINARIES:
-        case GET_DISTRIBUTION:
           this.$.callAjax.generateRequest();
           break;
 
