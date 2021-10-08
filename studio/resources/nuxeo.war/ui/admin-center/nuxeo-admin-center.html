@@ -19,6 +19,19 @@
       width: 80%;
       margin-left: 24px;
     }
+
+    .label: {
+      color:  black;
+      font-weight: bold !important;
+    }
+
+    .resultSubTitle {
+      margin-bottom: 0;
+    }
+
+    .resultSubValues {
+      margin-left: 15px;
+    }
     </style>
 
     <iron-ajax id="callAjax"
@@ -38,7 +51,7 @@
 
         <nuxeo-card heading="Operations">
           <div class="layout horizontal justified flex wrap">
-            <paper-button id="cleanOrphanedBinariesButton" raised noink on-tap="_cleanOrphanedBinaries">Clean Orphaned Binaries</paper-button>
+            <paper-button id="deleteOrphanedBinariesButton" raised noink on-tap="_deleteOrphanedBinaries">Delete Orphaned Binaries</paper-button>
           </div>
         </nuxeo-card>
 
@@ -69,7 +82,31 @@
       <!-- Display the result of the action, if needed -->
       <nuxeo-dialog id="resultDialog" with-backdrop>
         <h3>Result for <span style="font-style:  italic">[[confirmAction]]</span></h3>
-        <paper-textarea value="[[resultActionDetails]]" readonly></paper-textarea>
+
+        <template is="dom-if" if="[[resultActionDetails]]">
+          <paper-textarea value="[[resultActionDetails]]" readonly></paper-textarea>
+        </template>
+
+        <template is="dom-if" if="[[deleteOrphanedBinariesResult]]">
+          <nuxeo-card header="Result for Delete Orphaned Binaries">
+            <span class="label" style="font-weight: bold;">Duration</span>: [[deleteOrphanedBinariesResult.duration]]
+
+            <h5 class="resultSubTitle">Active Binaries</h5>
+            <div class="resultSubValues">
+              <span class="label">Number</span>: [[deleteOrphanedBinariesResult.activeBinaries.number]]
+              <br/>
+              <span class="label">Size</span>: [[deleteOrphanedBinariesResult.activeBinaries.size]]
+            </div>
+
+            <h5 class="resultSubTitle">Deleted Orphaned Binaries</h5>
+            <div class="resultSubValues">
+              <span class="label">Number</span>: [[deleteOrphanedBinariesResult.deletedBinaries.number]]
+              <br/>
+              <span class="label">Size</span>: [[deleteOrphanedBinariesResult.deletedBinaries.size]]
+            </div>
+          </nuxeo-card>
+        </template>
+
         <div class="buttons" style="float: right;">
           <paper-button dialog-dismiss class="primary" on-click="_resultDialogClosed">Ok</paper-button>
         </div>
@@ -80,7 +117,7 @@
   </template>
 
   <script>
-    const CLEAN_ORPHANED_BINARIES = "Clean Orphaned Binaries";
+    const DELETE_ORPHANED_BINARIES = "Delete Orphaned Binaries";
 
     Polymer({
       is: 'nuxeo-admin-center',
@@ -102,17 +139,19 @@
         progressTimer: {
           type: Number,
           value: Date.now()
-        }
+        },
+        resultActionDetails: String,
+        deleteOrphanedBinariesResult: Object
       },
       
       // ====================================
-      // Clean orphaned binaries
+      // Delete orphaned binaries
       // ====================================
-      _cleanOrphanedBinaries: function() {
-        this.confirmAction = CLEAN_ORPHANED_BINARIES;
-        this.confirmPrompt = "Clean up orphaned binaries?";
+      _deleteOrphanedBinaries: function() {
+        this.confirmAction = DELETE_ORPHANED_BINARIES;
+        this.confirmPrompt = "Delete orphaned binaries?";
         this.confirmInfo = "This is a synchronous call, it can take time if there are a lot of orphaned binaries: Be patient (and monitor server.log fo errors)";
-        this.confirmOkLabel = "Clean up";
+        this.confirmOkLabel = "Delete";
 
         this.url = "/nuxeo/api/v1/management/binaries/orphaned";
         this.method = "DELETE";
@@ -120,17 +159,33 @@
         this.$.confirmDialog.toggle();
       },
 
-      _cleanOrphanedBinariesResponse: function(evt, req) {
+      _deleteOrphanedBinariesResponse: function(evt, req) {
         let result = "";
         let resultJson = evt.detail.response;
 
-        result += "Duration: " + resultJson.gcDuration.toLocaleString() + "ms\n";
-        result += "Number of active binaries: " + this._formatBytes(resultJson.numBinaries).toLocaleString() + "\n";
-        result += "Size of active binaries: " + this._formatBytes(resultJson.sizeBinaries) + "\n";
-        result += "Number of orphaned binaries: " + this._formatBytes(resultJson.numBinariesGC).toLocaleString() + "\n";
-        result += "Size of orphaned binaries: " + this._formatBytes(resultJson.sizeBinariesGC) + "\n";
+        /*
+        result += "Duration: " + resultJson.gcDuration.toLocaleString() + "ms\n\n";
+        result += "Active binaries:\n"
+        result += "  Number: " + resultJson.numBinaries.toLocaleString() + "\n";
+        result += "  Size: " + this._formatBytes(resultJson.sizeBinaries) + "\n\n";
+        result += "Deleted orphaned binaries:\n"
+        result += "  Number: " + resultJson.numBinariesGC.toLocaleString() + "\n";
+        result += "  Size: " + this._formatBytes(resultJson.sizeBinariesGC) + "\n";
 
         this.resultActionDetails = result;//this._jsonREsultToText(evt.detail.response);
+        */
+        this._cleanUpResultDialogValues();
+        this.deleteOrphanedBinariesResult = {
+          "duration": resultJson.gcDuration.toLocaleString() + "ms",
+          "activeBinaries": {
+            "number": resultJson.numBinaries.toLocaleString(),
+            "size": this._formatBytes(resultJson.sizeBinaries)
+          },
+          "deletedBinaries": {
+            "number": resultJson.numBinariesGC.toLocaleString(),
+            "size": this._formatBytes(resultJson.sizeBinariesGC)
+          }
+        };
         this.$.resultDialog.toggle();
       },
 
@@ -143,6 +198,7 @@
       // => Simple alert, and the a reload()
       _ajaxCallFailure: function(evt, req) {
         alert("An error occured:\n\n" + evt.detail.error.stack);
+        this._cleanUpResultDialogValues();
         this._cleanupConfirmDialog();
         location.reload();
       },
@@ -163,8 +219,8 @@
       _ajaxCallSuccessRun: function(evt, req) {
 
         switch (this.confirmAction) {
-        case CLEAN_ORPHANED_BINARIES:
-          this._cleanOrphanedBinariesResponse(evt, req);
+        case DELETE_ORPHANED_BINARIES:
+          this._deleteOrphanedBinariesResponse(evt, req);
           break;
 
         default:
@@ -202,7 +258,7 @@
         this.progressTimer = Date.now();
 
         switch (this.confirmAction) {
-        case CLEAN_ORPHANED_BINARIES:
+        case DELETE_ORPHANED_BINARIES:
           this.$.callAjax.generateRequest();
           break;
 
@@ -210,6 +266,11 @@
           this._cleanupConfirmDialog();
           break;
         }
+      },
+
+      _cleanUpResultDialogValues: function() {
+        this.resultActionDetails = null;
+        this.deleteOrphanedBinariesResult = null;
       },
 
       _resultDialogClosed: function() {
@@ -226,7 +287,7 @@
         }
 
         const units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-        let l = 0, n = parseInt(x, 10) || 0;
+        let l = 0, n = parseInt(value, 10) || 0;
         while(n >= 1024 && ++l){
           n = n/1024;
         }
