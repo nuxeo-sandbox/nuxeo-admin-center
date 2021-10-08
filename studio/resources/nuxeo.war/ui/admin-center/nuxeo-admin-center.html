@@ -38,7 +38,7 @@
 
         <nuxeo-card heading="Operations">
           <div class="layout horizontal justified flex wrap">
-            <paper-button id="cleanOrphanBinariesButton" raised noink on-tap="_cleanOrphanBinaries">Clean Orphan Binaries</paper-button>
+            <paper-button id="cleanOrphanedBinariesButton" raised noink on-tap="_cleanOrphanedBinaries">Clean Orphaned Binaries</paper-button>
           </div>
         </nuxeo-card>
 
@@ -80,7 +80,7 @@
   </template>
 
   <script>
-    const CLEAN_ORPHAN_BINARIES = "Clean Orphan Binaries";
+    const CLEAN_ORPHANED_BINARIES = "Clean Orphaned Binaries";
 
     Polymer({
       is: 'nuxeo-admin-center',
@@ -105,11 +105,13 @@
         }
       },
       
-      // ====================> Clean orphan binaries
-      _cleanOrphanBinaries: function() {
-        this.confirmAction = CLEAN_ORPHAN_BINARIES;
-        this.confirmPrompt = "Clean up orphan binaries?";
-        this.confirmInfo = "This is a synchronous call, it can take time if there are a lot of orphan binaries: Be patient (and monitor server.log fo errors)";
+      // ====================================
+      // Clean orphaned binaries
+      // ====================================
+      _cleanOrphanedBinaries: function() {
+        this.confirmAction = CLEAN_ORPHANED_BINARIES;
+        this.confirmPrompt = "Clean up orphaned binaries?";
+        this.confirmInfo = "This is a synchronous call, it can take time if there are a lot of orphaned binaries: Be patient (and monitor server.log fo errors)";
         this.confirmOkLabel = "Clean up";
 
         this.url = "/nuxeo/api/v1/management/binaries/orphaned";
@@ -118,12 +120,23 @@
         this.$.confirmDialog.toggle();
       },
 
-      _cleanOrphanBinariesResponse: function(evt, req) {
-        this.resultActionDetails = JSON.stringify(evt.detail.response, null, 2);
+      _cleanOrphanedBinariesResponse: function(evt, req) {
+        let result = "";
+        let resultJson = evt.detail.response;
+
+        result += "Duration: " + resultJson.gcDuration.toLocaleString() + "ms\n";
+        result += "Number of active binaries: " + this._formatBytes(resultJson.numBinaries).toLocaleString() + "\n";
+        result += "Size of active binaries: " + this._formatBytes(resultJson.sizeBinaries) + "\n";
+        result += "Number of orphaned binaries: " + this._formatBytes(resultJson.numBinariesGC).toLocaleString() + "\n";
+        result += "Size of orphaned binaries: " + this._formatBytes(resultJson.sizeBinariesGC) + "\n";
+
+        this.resultActionDetails = result;//this._jsonREsultToText(evt.detail.response);
         this.$.resultDialog.toggle();
       },
 
-      // ====================> Success/Failure of the ajax call
+      // ====================================
+      // Success/Failure of the ajax call
+      // ====================================
       // Impossible ti get the result dialog displayed, nor the page
       // correctlmy refreshed. I believe the error occuring breaks
       // and maybe bubbles something.
@@ -150,8 +163,8 @@
       _ajaxCallSuccessRun: function(evt, req) {
 
         switch (this.confirmAction) {
-        case CLEAN_ORPHAN_BINARIES:
-          this._cleanOrphanBinariesResponse(evt, req);
+        case CLEAN_ORPHANED_BINARIES:
+          this._cleanOrphanedBinariesResponse(evt, req);
           break;
 
         default:
@@ -160,7 +173,9 @@
         }
       },
 
-      // ====================> Confirm and result dialogs handling
+      // ====================================
+      // Confirm and result dialogs handling
+      // ====================================
       _cleanupConfirmDialog: function() {
         this.confirmAction = null;
         this.confirmPrompt = null;
@@ -187,7 +202,7 @@
         this.progressTimer = Date.now();
 
         switch (this.confirmAction) {
-        case CLEAN_ORPHAN_BINARIES:
+        case CLEAN_ORPHANED_BINARIES:
           this.$.callAjax.generateRequest();
           break;
 
@@ -199,6 +214,23 @@
 
       _resultDialogClosed: function() {
         this._cleanupConfirmDialog();
+      },
+
+      // ====================================
+      // Utilities
+      // ====================================
+      _formatBytes: function(value) {
+
+        if(!value) {
+          return 0;
+        }
+
+        const units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+        let l = 0, n = parseInt(x, 10) || 0;
+        while(n >= 1024 && ++l){
+          n = n/1024;
+        }
+        return(n.toFixed(n < 10 && l > 0 ? 1 : 0) + ' ' + units[l]);
       }
     });
   </script>
