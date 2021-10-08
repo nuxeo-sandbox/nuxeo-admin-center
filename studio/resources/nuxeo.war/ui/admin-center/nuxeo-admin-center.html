@@ -1,15 +1,16 @@
 <dom-module id="nuxeo-admin-center">
   <template>
     <style include="iron-flex iron-flex-alignment nuxeo-styles">
+
     nuxeo-dialog {
-      max-width: 500px;
+      max-width: 700px;
     }
 
     .confirmPrompt {
       font-size: larger;
     }
 
-    /* Work-around milalignment of the OK button */
+    /* Work-around missalignment of the OK button */
     .buttons {
       padding-right: 24px;
       padding-bottom: 12px;
@@ -20,9 +21,11 @@
       margin-left: 24px;
     }
 
+    /* Actually, for whatever reason, can't set label style...
+       => using inline style... */
     .label: {
       color:  black;
-      font-weight: bold !important;
+      font-weight: bold;
     }
 
     .resultSubTitle {
@@ -31,6 +34,15 @@
 
     .resultSubValues {
       margin-left: 15px;
+    }
+
+    .scrollableTable {
+      height: 300px;
+      overflow: auto;
+      border-style: solid;
+      border-width: 1px;
+      border-color: grey;
+      padding: 5px;
     }
     </style>
 
@@ -50,8 +62,9 @@
       <div class="content">
 
         <nuxeo-card heading="Operations">
-          <div class="layout horizontal justified flex wrap">
+          <div class="layout horizontal flex wrap">
             <paper-button id="deleteOrphanedBinariesButton" raised noink on-tap="_deleteOrphanedBinaries">Delete Orphaned Binaries</paper-button>
+            <paper-button id="getDistributionButton" raised noink on-tap="_getDistribution">Nuxeo Distribution Info</paper-button>
           </div>
         </nuxeo-card>
 
@@ -87,6 +100,7 @@
           <paper-textarea value="[[resultActionDetails]]" readonly></paper-textarea>
         </template>
 
+        <!-- Ophaned Binaries result -->
         <template is="dom-if" if="[[deleteOrphanedBinariesResult]]">
           <nuxeo-card header="Result for Delete Orphaned Binaries">
             <span class="label" style="font-weight: bold;">Duration</span>: [[deleteOrphanedBinariesResult.duration]]
@@ -107,6 +121,36 @@
           </nuxeo-card>
         </template>
 
+        <!-- Distribution result -->
+        <template is="dom-if" if="[[distributionResult]]">
+          <nuxeo-card header="Result for Nuxeo Distribution">
+
+            <div role="widget">
+              <div style="color:black;font-weight:bold;">Nuxeo Application</div>
+              <div>[[distributionResult.applicationName]] [[distributionResult.applicationVersion]]</div>
+            </div>
+
+            <div role="widget">
+              <div style="color:black;font-weight:bold;">Nuxeo Distribution</div>
+              <div>[[distributionResult.distributionName]] [[distributionResult.distributionVersion]] (date: [[distributionResult.distributionDate]])</div>
+            </div>
+
+            <div role="widget">
+              <div style="color:black;font-weight:bold;">Bundles</div>
+              <div class="scrollableTable">
+                <table style="height: 300px">
+                    <template is="dom-repeat" items="[[distributionResult.bundles]]">
+                      <tr>
+                        <td width="60%">[[item.name]]</td>
+                        <td>[[item.version]]</td>
+                      </tr>
+                    </template>
+                </table>
+              </div>
+            </div>
+          </nuxeo-card>
+        </template>
+
         <div class="buttons" style="float: right;">
           <paper-button dialog-dismiss class="primary" on-click="_resultDialogClosed">Ok</paper-button>
         </div>
@@ -118,6 +162,7 @@
 
   <script>
     const DELETE_ORPHANED_BINARIES = "Delete Orphaned Binaries";
+    const GET_DISTRIBUTION = "Nuxeo Distribution";
 
     Polymer({
       is: 'nuxeo-admin-center',
@@ -141,7 +186,8 @@
           value: Date.now()
         },
         resultActionDetails: String,
-        deleteOrphanedBinariesResult: Object
+        deleteOrphanedBinariesResult: Object,
+        distributionResult: Object
       },
       
       // ====================================
@@ -163,17 +209,6 @@
         let result = "";
         let resultJson = evt.detail.response;
 
-        /*
-        result += "Duration: " + resultJson.gcDuration.toLocaleString() + "ms\n\n";
-        result += "Active binaries:\n"
-        result += "  Number: " + resultJson.numBinaries.toLocaleString() + "\n";
-        result += "  Size: " + this._formatBytes(resultJson.sizeBinaries) + "\n\n";
-        result += "Deleted orphaned binaries:\n"
-        result += "  Number: " + resultJson.numBinariesGC.toLocaleString() + "\n";
-        result += "  Size: " + this._formatBytes(resultJson.sizeBinariesGC) + "\n";
-
-        this.resultActionDetails = result;//this._jsonREsultToText(evt.detail.response);
-        */
         this._cleanUpResultDialogValues();
         this.deleteOrphanedBinariesResult = {
           "duration": resultJson.gcDuration.toLocaleString() + "ms",
@@ -190,6 +225,35 @@
       },
 
       // ====================================
+      // Nuxeo distribution
+      // ====================================
+      _getDistribution: function() {
+        this.confirmAction = GET_DISTRIBUTION;
+        this.confirmPrompt = "Get Nuxeo distribution info?";
+        this.confirmInfo = ""
+        this.confirmOkLabel = "Ok";
+
+        this.url = "/nuxeo/api/v1/management/distribution";
+        this.method = "GET";
+
+        this.$.confirmDialog.toggle();
+      },
+
+      _getDistributionResponse: function(evt, req) {
+
+        this._cleanUpResultDialogValues();
+        this.distributionResult = evt.detail.response;
+        /*
+        let bundlesAsString = "";
+        this.distributionResult.bundles.forEach(function(bundle) {
+          bundlesAsString +=  `${bundle.name}   v${bundle.version}\n`;
+        });
+        this.distributionResult.bundlesAsString = bundlesAsString;
+        */
+        this.$.resultDialog.toggle();
+      },
+
+      // ====================================
       // Success/Failure of the ajax call
       // ====================================
       // Impossible ti get the result dialog displayed, nor the page
@@ -197,7 +261,7 @@
       // and maybe bubbles something.
       // => Simple alert, and the a reload()
       _ajaxCallFailure: function(evt, req) {
-        alert("An error occured:\n\n" + evt.detail.error.stack);
+        alert("An error occured when running " + this.confirmAction + ":\n\n" + evt.detail.error.stack);
         this._cleanUpResultDialogValues();
         this._cleanupConfirmDialog();
         location.reload();
@@ -221,6 +285,10 @@
         switch (this.confirmAction) {
         case DELETE_ORPHANED_BINARIES:
           this._deleteOrphanedBinariesResponse(evt, req);
+          break;
+
+        case GET_DISTRIBUTION:
+          this._getDistributionResponse(evt, req);
           break;
 
         default:
@@ -259,6 +327,7 @@
 
         switch (this.confirmAction) {
         case DELETE_ORPHANED_BINARIES:
+        case GET_DISTRIBUTION:
           this.$.callAjax.generateRequest();
           break;
 
@@ -271,6 +340,7 @@
       _cleanUpResultDialogValues: function() {
         this.resultActionDetails = null;
         this.deleteOrphanedBinariesResult = null;
+        this.distributionResult = null;
       },
 
       _resultDialogClosed: function() {
