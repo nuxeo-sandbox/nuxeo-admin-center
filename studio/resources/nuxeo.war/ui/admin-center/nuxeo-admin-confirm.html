@@ -1,0 +1,116 @@
+<!--
+`nuxeo-admin-confirm`
+
+Displays a confirm dialog.
+
+Simple call:
+<nuxeo-admin-confirm id="myDialog"
+                     confirm-prompt="Delete the orphaned binaries?"></nuxeo-admin-confirm>
+
+<paper-button raised noink on-tap="_displayDialog">Hello there!</paper-button>
+
+In the script of your element, add listeners for "adminDialogOk"/"adminDialogCancel"
+. . .
+<script>
+  . . .
+  properties {
+    . . .
+  },
+
+  listeners: {
+    "adminDialogOk": 'jsListenerForOk',
+    "adminDialogCancel": 'jsListenerForCancel'
+  },
+
+  // Opens the dialog
+  _displayDialog: function() {
+    this.$.myDialog.toggle();
+  },
+
+  jsListenerForOk: function() {
+    . . . do something . . .
+  },
+
+  jsListenerForCancel: function() {
+    . . . do something . . .
+  },
+-->
+<dom-module id="nuxeo-admin-confirm">
+  <template>
+    <style include="iron-flex iron-flex-alignment nuxeo-styles">
+
+    nuxeo-dialog {
+      max-width: 700px;
+    }
+
+    .confirmPrompt {
+      font-size: larger;
+    }
+
+    /* Work-around missalignment of the OK button */
+    .buttons {
+      padding-right: 24px;
+      padding-bottom: 12px;
+    }
+    </style>
+
+    <nuxeo-dialog id="confirmDialog" with-backdrop>
+      <div class="confirmPrompt">
+        [[confirmPrompt]]
+      </div>
+      <div class="confirmInfo">
+        [[confirmInfo]]
+      </div>
+
+      <div class="buttons">
+        <paper-button dialog-dismiss class="secondary" on-click="_confirmCancel">Cancel</paper-button>
+        <paper-button on-click="_confirmOk" class="primary">[[confirmOkLabel]]</paper-button>
+      </div>
+    </nuxeo-dialog>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is: 'nuxeo-admin-confirm',
+      behaviors: [Nuxeo.LayoutBehavior],
+      properties: {
+        confirmPrompt: String,
+        confirmInfo: String,
+        confirmOkLabel: {
+          type: String,
+          value: "Ok"
+        }
+      },
+
+      // ====================================
+      // Public APIs
+      // ====================================
+      toggle: function() {
+        this.$.confirmDialog.toggle();
+      },
+
+      // ====================================
+      // Confirm and result dialogs handling
+      // ====================================
+      _cleanupDialog: function() {
+        this.confirmPrompt = null;
+        this.confirmInfo = "";
+        this.confirmOkLabel = "Ok";
+
+        this.$.confirmDialog.close();
+      },
+
+      _confirmOk: function() {
+        this._cleanupDialog();
+        this.fire('adminDialogOk');
+      },
+
+      _confirmCancel: function() {
+        this._cleanupDialog();
+        this.fire('adminDialogCancel');
+      }
+    });
+  </script>
+</dom-module>

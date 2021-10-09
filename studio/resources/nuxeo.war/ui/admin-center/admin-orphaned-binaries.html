@@ -1,0 +1,250 @@
+<!--
+  `admin-orphaned-binaries`
+
+  Displays a button allowing for deleting orpahned binaries.
+  When clicked, the button dispoays a confirm dialog. If the user chooses
+  to validate (Ok), the orphaned binaries are deleted, and a dialoge giving
+  details is displayed.
+
+  There is no properties to set, usage is simple after importing the element:
+  <admin-orphaned-binaries></admin-orphaned-binaries>
+-->
+<dom-module id="admin-orphaned-binaries">
+  <template>
+    <style include="iron-flex iron-flex-alignment nuxeo-styles">
+
+    .progressDiv {
+      width: 80%;
+      margin-left: 24px;
+    }
+
+    .label: {
+      color:  black;
+      font-weight: bold;
+    }
+
+    .resultSubTitle {
+      margin-bottom: 0;
+    }
+
+    .resultSubValues {
+      margin-left: 15px;
+    }
+
+    .resultEnabled {
+      color: black;
+    }
+
+    .resultDisabled {
+      color: lightgrey;
+    }
+    </style>
+
+    <iron-ajax id="callAjax"
+               url="/nuxeo/api/v1/management/binaries/orphaned"
+               method="DELETE"
+               on-response="_ajaxCallSuccess"
+               on-error="_ajaxCallFailure">
+    </iron-ajax>
+
+    <paper-button id="deleteOrphanedBinariesButton"
+                  raised noink
+                  on-tap="_deleteOrphanedBinaries">
+      Delete Orphaned Binaries
+    </paper-button>
+
+    <nuxeo-admin-confirm id="adminConfirmDialog"
+                         confirm-prompt="Delete the orphaned binaries?"
+                         confirm-info="This is a synchronous call, it can take time if there are a lot of orphaned binaries: Be patient (and monitor server.log fo errors)"
+                         confirm-ok-label="Delete"></nuxeo-admin-confirm>
+
+    <!-- Display the result -->
+    <nuxeo-dialog id="resultDialog" with-backdrop>
+      <h3>Delete Orphaned Binaries</h3>
+
+      <nuxeo-card header="Result for Delete Orphaned Binaries">
+
+        <paper-progress id="progress"
+                        class="progressDiv"
+                        style="display: [[displayProgressStyle]]"
+                        indeterminate>
+        </paper-progress>
+        <div class="progressDiv" style="display: [[displayProgressStyle]];margin-bottom:20px">
+          [[processingInfo]]
+        </div>
+<div id="resultDetails" class="resultDisabled">
+        <span class="label" style="font-weight: bold;">Duration</span>: [[deleteOrphanedBinariesResult.duration]]
+
+        <h5 class="resultSubTitle">Active Binaries</h5>
+        <div class="resultSubValues">
+          <span class="label">Number</span>: [[deleteOrphanedBinariesResult.activeBinaries.number]]
+          <br/>
+          <span class="label">Size</span>: [[deleteOrphanedBinariesResult.activeBinaries.size]]
+        </div>
+
+        <h5 class="resultSubTitle">Deleted Orphaned Binaries</h5>
+        <div class="resultSubValues">
+          <span class="label">Number</span>: [[deleteOrphanedBinariesResult.deletedBinaries.number]]
+          <br/>
+          <span class="label">Size</span>: [[deleteOrphanedBinariesResult.deletedBinaries.size]]
+        </div>
+</div>
+      </nuxeo-card>
+
+      <div class="buttons" style="float: right;">
+        <paper-button id="resultOkButton" dialog-dismiss class="primary" disabled on-click="_resultDialogClosed">Ok</paper-button>
+      </div>
+    </nuxeo-dialog>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'admin-orphaned-binaries',
+      behaviors: [Nuxeo.LayoutBehavior],
+      properties: {
+        displayProgressStyle: {
+          type: String,
+          value: "none"
+        },
+        progressTimer: {
+          type: Number,
+          value: Date.now()
+        },
+        processingInfo: {
+          type: String,
+          value: "Processing the request..."
+        },
+        deleteOrphanedBinariesResult: Object,
+        resultClass: {
+          type: String,
+          value: "resultDisabled"
+        }
+      },
+
+      // Listeners to get the action on the nuxeo-admin-confirm
+      listeners: {
+        "adminDialogOk": '_confirmDialogOk',
+        "adminDialogCancel": '_confirmDialogCancel'
+      },
+
+      // Button is clicked
+      _deleteOrphanedBinaries: function() {
+        this.$.adminConfirmDialog.toggle();
+      },
+
+      // Confirm dialog OK button clicked
+      _confirmDialogOk: function() {
+        // Reset values
+        this.deleteOrphanedBinariesResult = {
+          "duration": "...",
+          "activeBinaries": {
+            "number": "...",
+            "size": "..."
+          },
+          "deletedBinaries": {
+            "number": "...",
+            "size": "..."
+          },
+        }
+
+        // Show progress
+        this.$.progress.disabled = false;
+        this.displayProgressStyle = "";
+        this.progressTimer = Date.now();
+
+        this.$.resultDetails.className="resultDisabled";
+
+        // Show result with timer
+        this.$.resultDialog.toggle();
+
+        // Call Nuxeo
+        this.$.callAjax.generateRequest();
+      },
+
+      _confirmDialogCancel: function() {
+        // Nothing
+      },
+
+      _deleteOrphanedBinariesResponse: function(evt, req) {
+        let result = "";
+        let resultJson = evt.detail.response;
+
+        this.deleteOrphanedBinariesResult = {
+          "duration": resultJson.gcDuration.toLocaleString() + "ms",
+          "activeBinaries": {
+            "number": resultJson.numBinaries.toLocaleString(),
+            "size": this._formatBytes(resultJson.sizeBinaries)
+          },
+          "deletedBinaries": {
+            "number": resultJson.numBinariesGC.toLocaleString(),
+            "size": this._formatBytes(resultJson.sizeBinariesGC)
+          }
+        };
+
+        this.$.resultDetails.className="resultEnabled"
+        this.$.resultOkButton.disabled = false;
+        this.$.progress.disabled = true;
+        this.processingInfo = "Processing done";
+
+      },
+
+      // ====================================
+      // Success/Failure of the ajax call
+      // ====================================
+      // Impossible ti get the result dialog displayed, nor the page
+      // correctlmy refreshed. I believe the error occuring breaks
+      // and maybe bubbles something.
+      // => Simple alert, and the a reload()
+      _ajaxCallFailure: function(evt, req) {
+        alert("An error occured when running <Delete Orphan Binaries>:\n\n" + evt.detail.error.stack);
+        this._cleanUpResultDialogValues();
+        location.reload();
+      },
+
+      // When the call is succesful, but too fast, we let the progress a little bit
+      _ajaxCallSuccess: function(evt, req) {
+
+        let reminder = 3000 - (Date.now() - this.progressTimer);
+        if(reminder > 500) {
+          setTimeout(function() {
+            this._deleteOrphanedBinariesResponse(evt, req);
+          }.bind(this), reminder);
+        } else {
+          this._deleteOrphanedBinariesResponse(evt, req);
+        }
+      },
+
+      // ====================================
+      // Result dialogs handling
+      // ====================================
+      _cleanUpResultDialogValues: function() {
+        this.deleteOrphanedBinariesResult = null;
+        this.displayProgressStyle = "none";
+        this.progressTimer =  Date.now();
+        this.processingInfo = "Processing request...";
+      },
+
+      _resultDialogClosed: function() {
+        this._cleanUpResultDialogValues();
+      },
+
+      // ====================================
+      // Utilities
+      // ====================================
+      _formatBytes: function(value) {
+
+        if(!value) {
+          return 0;
+        }
+
+        const units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+        let l = 0, n = parseInt(value, 10) || 0;
+        while(n >= 1024 && ++l){
+          n = n/1024;
+        }
+        return(n.toFixed(n < 10 && l > 0 ? 1 : 0) + ' ' + units[l]);
+      }
+    });
+  </script>
+</dom-module>
