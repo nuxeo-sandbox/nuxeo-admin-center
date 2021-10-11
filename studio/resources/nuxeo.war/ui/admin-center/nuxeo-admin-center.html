@@ -2,6 +2,7 @@
 <link rel="import" href="admin-nuxeo-distribution.html">
 <link rel="import" href="admin-nuxeo-probes.html">
 <link rel="import" href="admin-status.html">
+<link rel="import" href="admin-reindex-repository.html">
 
 <dom-module id="nuxeo-admin-center">
   <template>
@@ -20,6 +21,10 @@
 
     .card {
       margin:  20px;
+    }
+
+    .moreSpaceAbove {
+      margin-top:  20px;
     }
     </style>
 
@@ -42,6 +47,10 @@
               <admin-orphaned-binaries class="actionButton"></admin-orphaned-binaries>
               
               <admin-nuxeo-probes class="actionButton"></admin-nuxeo-probes>
+            </div>
+
+            <div class="layout horizontal moreSpaceAbove">
+              <admin-reindex-repository></admin-reindex-repository>
             </div>
           </nuxeo-card>
         </div>

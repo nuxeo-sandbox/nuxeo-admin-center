@@ -1,0 +1,89 @@
+<!--
+  `admin-reindex-repository`
+
+  Displays a button allowing for re-indexing the whole repository
+  (elasticsearch reindexing)
+
+  User must be an administrator or an authorized user.
+
+  There is no properties to set, usage is simple after importing the element:
+  <admin-reindex-repository></admin-reindex-repository>
+-->
+<link rel="import" href="nuxeo-admin-confirm.html">
+<dom-module id="admin-reindex-repository">
+  <template>
+    <style include="iron-flex iron-flex-alignment nuxeo-styles">
+
+    nuxeo-dialog {
+      max-width: 700px;
+    }
+    </style>
+
+    <nuxeo-operation id="reindexOp"
+                     op="Elasticsearch.Index"></nuxeo-operation>
+
+    <paper-button id="reindexButton"
+                  raised noink
+                  on-tap="_reindexRepository">
+      Elasticsearch: Reindex Repository
+    </paper-button>
+
+    <nuxeo-admin-confirm id="adminConfirmDialog"
+                         confirm-prompt="Re-index the repository?"
+                         confirm-info="This is an asynchronous call: Monitor the log to follow the progression."
+                         confirm-ok-label="Re-index"></nuxeo-admin-confirm>
+
+    <!-- Display the result -->
+    <nuxeo-dialog id="resultDialog" with-backdrop>
+      <h3>Elasticsearch: Reindex Repository</h3>
+
+      <p>
+        Your repository index is rebuilding.<br/>
+        It is an asynchronous process: Please, monitor the log to check once it is done.
+      </p>
+
+      <div class="buttons" style="float: right;">
+        <paper-button id="resultOkButton" dialog-dismiss class="primary">Ok</paper-button>
+      </div>
+    </nuxeo-dialog>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'admin-reindex-repository',
+      behaviors: [Nuxeo.LayoutBehavior],
+      properties: {
+      },
+
+      // Listeners to get the action on the nuxeo-admin-confirm
+      listeners: {
+        "adminDialogOk": '_confirmDialogOk',
+        "adminDialogCancel": '_confirmDialogCancel'
+      },
+
+      // Button is clicked
+      _reindexRepository: function() {
+        this.$.adminConfirmDialog.toggle();
+      },
+
+      // nuxeo-admin-confirm dialog OK button clicked
+      // Set up the ui (progress, etc.) and call Nuxeo
+      _confirmDialogOk: function() {
+        let op = this.$.reindexOp;
+
+        op.execute()
+          .then(function(result) {
+            this.$.resultDialog.toggle();
+          }.bind(this))
+          .catch(function(error) {
+            alert("An error occured when running <Reindex repository>:\n\n" + error);
+          }.bind(this));
+      },
+
+      _confirmDialogCancel: function() {
+        // Nothing
+      }
+    });
+  </script>
+</dom-module>
