@@ -16,24 +16,42 @@
       max-width: 700px;
     }
 
-    /* Actually, for whatever reason, can't set this style on a div...
-       => using inline style */
-    .label: {
-      color:  black;
-      font-weight: bold;
+    table {
+      border-collapse: collapse;
     }
 
-    .columnHeader {
-      font-weight: bold;
+    tr {
+      border: solid;
+      border-width: 1px 0;
+      border-color: grey;
+    }
+
+    th {
+      text-align: center;
+    }
+
+    td {
+      padding:  10px;
     }
 
     .scrollableTable {
-      height: 300px;
-      overflow: auto;
+      height: 385px;
+      overflow: auto;/*
       border-style: solid;
       border-width: 1px;
-      border-color: grey;
+      border-color: grey;*/
       padding: 5px;
+    }
+
+    .executedOnce {
+      padding-right: 20px;
+      padding-left: 20px;
+      text-align: center;
+    }
+
+    .probeInfo {
+      text-align: left;
+      padding-left: 20px;
     }
     </style>
 
@@ -56,26 +74,34 @@
 
       <nuxeo-card>
 
-        <div role="widget">
+        <div role="widget" class="layout vertical">
+
           <div class="scrollableTable">
-            <table style="height: 300px;border-spacing: 10px;">
+            <table style="height: 300px;border-spacing: 5px;">
                   <tr>
-                    <td class="columnHeader">Probe</td>
-                    <td class="columnHeader">Never Executed</td>
-                    <td class="columnHeader">Success</td>
-                    <td class="columnHeader">Info</td>
+                    <th>Probe</td>
+                    <th class="executedOnce">Executed<br/>at least once?</td>
+                    <th>Success</td>
+                    <th class="probeInfo">Info</td>
                   </tr>
                 <template is="dom-repeat" items="[[probesResult]]">
-                  <tr>
+                  <tr style="[[_getTRStyle(item)]]">
                     <td>[[item.name]]</td>
-                    <td style="text-align: center;">[[item.status.neverExecuted]]</td>
-                    <td style="text-align: center;">[[_formatProbeSucces(item.status.neverExecuted, item.status.success)]]</td>
-                    <td>[[item.status.infos.info]]</td>
+                    <td class="executedOnce">[[_formatNeverExecuted(item.status.neverExecuted)]]</td>
+                    <td class="executedOnce">[[_formatProbeSucces(item.status.neverExecuted, item.status.success)]]</td>
+                    <td class="probeInfo">[[_formatInfo(item.status.neverExecuted, item.status.infos.info)]]</td>
                   </tr>
                 </template>
             </table>
           </div>
+
+          <div role="widget" style="font-size: smaller;float:right;margin-left: 15px;">
+              <span style="font-style:  italic;">Italic</span>: Never executed
+              <span style="color: red;margin-left: 20px;">Red</span>: Failure
+          </div>
+
         </div>
+
       </nuxeo-card>
 
       <div class="buttons" style="float: right;">
@@ -91,6 +117,18 @@
       behaviors: [Nuxeo.LayoutBehavior],
       properties: {
         probesResult: Object
+      },
+
+      _getTRStyle: function(probe) {
+        if(probe.status.neverExecuted) {
+          return "font-style: italic;";
+        }
+
+        if(!probe.status.success) {
+          return "color: red;";
+        }
+
+        return "";
       },
 
       // Button is clicked
@@ -129,12 +167,31 @@
         this._cleanUpResultDialogValues();
       },
 
-      _formatProbeSucces: function(neverExecuted, result) {
+      _formatNeverExecuted: function(value) {
+        if(value) {
+          return "No";
+        }
+
+        return "Yes";
+      },
+
+      _formatProbeSucces: function(neverExecuted, success) {
         if(neverExecuted) {
           return "-";
-        } else {
-          return result;
+        } else if (success) {
+          return "Yes";
         }
+        return "No";
+      },
+
+      _formatInfo: function(neverExecuted, info) {
+        if(neverExecuted) {
+          if(info.toLowerCase() === "[unavailable]") {
+            return "-";
+          }
+        }
+
+        return info;
       }
     });
   </script>
