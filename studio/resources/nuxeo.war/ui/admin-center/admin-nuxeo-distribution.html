@@ -9,7 +9,6 @@
   There is no properties to set, usage is simple after importing the element:
   <admin-nuxeo-distribution></admin-nuxeo-distribution>
 -->
-<link rel="import" href="nuxeo-admin-confirm.html">
 <dom-module id="admin-nuxeo-distribution">
   <template>
     <style include="iron-flex iron-flex-alignment nuxeo-styles">
@@ -47,10 +46,6 @@
                   on-tap="_getDistribution">
       Nuxeo Distribution Info
     </paper-button>
-
-    <nuxeo-admin-confirm id="adminConfirmDialog"
-                         confirm-prompt="Get Nuxeo distribution info?"
-                         confirm-ok-label="Ok"></nuxeo-admin-confirm>
 
     <!-- Display the result -->
     <nuxeo-dialog id="resultDialog" with-backdrop>
@@ -97,28 +92,13 @@
         distributionResult: Object
       },
 
-      // Listeners to get the action on the nuxeo-admin-confirm
-      listeners: {
-        "adminDialogOk": '_confirmDialogOk',
-        "adminDialogCancel": '_confirmDialogCancel'
-      },
-
-      // nuxeo-admin-confirm dialog OK button clicked
-      _confirmDialogOk: function() {
+      // Button is clicked
+      _getDistribution: function() {
         // Reset values
         this._cleanUpResultDialogValues();
 
         // Call Nuxeo
         this.$.callAjax.generateRequest();
-      },
-
-      _confirmDialogCancel: function() {
-        // Nothing
-      },
-
-      // Button is clicked
-      _getDistribution: function() {
-        this.$.adminConfirmDialog.toggle();
       },
 
       // Callback from iron-ajax with success
