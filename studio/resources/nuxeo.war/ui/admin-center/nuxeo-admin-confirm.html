@@ -1,12 +1,24 @@
 <!--
 `nuxeo-admin-confirm`
 
-Displays a confirm dialog.
+Displays a confirm dialog. Event are raised when the user clicks Ok or Cancel button.
 
+--------------------
+Examples
+--------------------
 Simple call:
 <nuxeo-admin-confirm id="myDialog"
                      confirm-prompt="Delete the orphaned binaries?"></nuxeo-admin-confirm>
 
+With more properties:
+<nuxeo-admin-confirm id="myDialog"
+                     confirm-prompt="Delete the orphaned binaries?"
+                     confirm-info="This operaiton is asynchrnous and can take time: Be patient and monitor the log."
+                     confirm-ok-label="Delete"></nuxeo-admin-confirm>
+
+--------------------
+Usage
+--------------------
 <paper-button raised noink on-tap="_displayDialog">Hello there!</paper-button>
 
 In the script of your element, add listeners for "adminDialogOk"/"adminDialogCancel"

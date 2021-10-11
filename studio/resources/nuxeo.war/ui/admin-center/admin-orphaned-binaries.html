@@ -6,9 +6,12 @@
   to validate (Ok), the orphaned binaries are deleted, and a dialoge giving
   details is displayed.
 
+  User must be an administrator or an authorized user.
+
   There is no properties to set, usage is simple after importing the element:
   <admin-orphaned-binaries></admin-orphaned-binaries>
 -->
+<link rel="import" href="nuxeo-admin-confirm.html">
 <dom-module id="admin-orphaned-binaries">
   <template>
     <style include="iron-flex iron-flex-alignment nuxeo-styles">
@@ -72,23 +75,24 @@
         <div class="progressDiv" style="display: [[displayProgressStyle]];margin-bottom:20px">
           [[processingInfo]]
         </div>
-<div id="resultDetails" class="resultDisabled">
-        <span class="label" style="font-weight: bold;">Duration</span>: [[deleteOrphanedBinariesResult.duration]]
 
-        <h5 class="resultSubTitle">Active Binaries</h5>
-        <div class="resultSubValues">
-          <span class="label">Number</span>: [[deleteOrphanedBinariesResult.activeBinaries.number]]
-          <br/>
-          <span class="label">Size</span>: [[deleteOrphanedBinariesResult.activeBinaries.size]]
-        </div>
+        <div id="resultDetails" class="resultDisabled">
+          <span style="font-weight: bold;">Duration</span>: [[deleteOrphanedBinariesResult.duration]]
 
-        <h5 class="resultSubTitle">Deleted Orphaned Binaries</h5>
-        <div class="resultSubValues">
-          <span class="label">Number</span>: [[deleteOrphanedBinariesResult.deletedBinaries.number]]
-          <br/>
-          <span class="label">Size</span>: [[deleteOrphanedBinariesResult.deletedBinaries.size]]
+          <h5 class="resultSubTitle">Active Binaries</h5>
+          <div class="resultSubValues">
+            <span class="label">Number</span>: [[deleteOrphanedBinariesResult.activeBinaries.number]]
+            <br/>
+            <span class="label">Size</span>: [[deleteOrphanedBinariesResult.activeBinaries.size]]
+          </div>
+
+          <h5 class="resultSubTitle">Deleted Orphaned Binaries</h5>
+          <div class="resultSubValues">
+            <span class="label">Number</span>: [[deleteOrphanedBinariesResult.deletedBinaries.number]]
+            <br/>
+            <span class="label">Size</span>: [[deleteOrphanedBinariesResult.deletedBinaries.size]]
+          </div>
         </div>
-</div>
       </nuxeo-card>
 
       <div class="buttons" style="float: right;">
@@ -133,7 +137,8 @@
         this.$.adminConfirmDialog.toggle();
       },
 
-      // Confirm dialog OK button clicked
+      // nuxeo-admin-confirm dialog OK button clicked
+      // Set up the ui (progress, etc.) and call Nuxeo
       _confirmDialogOk: function() {
         // Reset values
         this.deleteOrphanedBinariesResult = {
@@ -166,6 +171,7 @@
         // Nothing
       },
 
+      // Display the final response: Update the UI
       _deleteOrphanedBinariesResponse: function(evt, req) {
         let result = "";
         let resultJson = evt.detail.response;
@@ -192,16 +198,18 @@
       // ====================================
       // Success/Failure of the ajax call
       // ====================================
-      // Impossible ti get the result dialog displayed, nor the page
-      // correctlmy refreshed. I believe the error occuring breaks
+      // Failure
+      // Impossible to get the result dialog displayed, nor the page
+      // correctly refreshed. I believe the error occuring breaks
       // and maybe bubbles something.
-      // => Simple alert, and the a reload()
+      // => Simple alert, and then reload()
       _ajaxCallFailure: function(evt, req) {
         alert("An error occured when running <Delete Orphan Binaries>:\n\n" + evt.detail.error.stack);
         this._cleanUpResultDialogValues();
         location.reload();
       },
 
+      // Success
       // When the call is succesful, but too fast, we let the progress a little bit
       _ajaxCallSuccess: function(evt, req) {
 

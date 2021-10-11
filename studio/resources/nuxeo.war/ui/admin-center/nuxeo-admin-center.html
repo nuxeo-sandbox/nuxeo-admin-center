@@ -1,60 +1,18 @@
-<link rel="import" href="nuxeo-admin-confirm.html">
 <link rel="import" href="admin-orphaned-binaries.html">
+<link rel="import" href="admin-nuxeo-distribution.html">
 
 <dom-module id="nuxeo-admin-center">
   <template>
     <style include="iron-flex iron-flex-alignment nuxeo-styles">
-
-    nuxeo-dialog {
-      max-width: 700px;
+    .actionButton {
+      margin-left:  25px;
     }
 
-    .confirmPrompt {
-      font-size: larger;
-    }
-
-    /* Work-around missalignment of the OK button */
-    .buttons {
-      padding-right: 24px;
-      padding-bottom: 12px;
-    }
-
-    .progressDiv {
-      width: 80%;
-      margin-left: 24px;
-    }
-
-    /* Actually, for whatever reason, can't set label style...
-       => using inline style... */
-    .label: {
-      color:  black;
-      font-weight: bold;
-    }
-
-    .resultSubTitle {
-      margin-bottom: 0;
-    }
-
-    .resultSubValues {
-      margin-left: 15px;
-    }
-
-    .scrollableTable {
-      height: 300px;
-      overflow: auto;
-      border-style: solid;
-      border-width: 1px;
-      border-color: grey;
-      padding: 5px;
+    .content {
+      max-width: 50%;
+      background-color: white;
     }
     </style>
-
-    <iron-ajax id="callAjax"
-               url="[[url]]"
-               method="[[method]]"
-               on-response="_ajaxCallSuccess"
-               on-error="_ajaxCallFailure">
-    </iron-ajax>
 
     <nuxeo-page>
 
@@ -63,241 +21,34 @@
       </div>
 
       <div class="content">
+        <nuxeo-card heading="">
+          <div class="layout horizontal">
+            <admin-nuxeo-distribution></admin-nuxeo-distribution>
 
-        <nuxeo-card heading="Operations">
-          <div class="layout horizontal flex wrap">
-            <admin-orphaned-binaries></admin-orphaned-binaries>
-
-            <paper-button id="getDistributionButton" raised noink on-tap="_getDistribution">Nuxeo Distribution Info</paper-button>
+            <admin-orphaned-binaries class="actionButton"></admin-orphaned-binaries>
           </div>
         </nuxeo-card>
 
+        <nuxeo-card>
+          <div class="layout vertical">
+            The following actions are to be done from the Nuxeo Developer Extension:
+            <ul>
+              <li>Re-index Elasticsearch</li>
+              <li>Restart Server</li>
+            </ul>
+          </div>
+        </nuxeo-card>
       </div>
-
-      <!-- Confirm dialog for the misc actions -->
-      <nuxeo-dialog id="confirmDialog" with-backdrop>
-        <div class="confirmPrompt">
-          [[confirmPrompt]]
-        </div>
-        <div class="confirmInfo">
-          [[confirmInfo]]
-        </div>
-
-        <paper-progress id="progress"
-                        class="progressDiv"
-                        style="display: [[displayProgressStyle]]"
-                        indeterminate
-                        disabled>
-        </paper-progress>
-
-        <div class="buttons">
-          <paper-button dialog-dismiss class="secondary" on-click="_confirmCancel">Cancel</paper-button>
-          <paper-button on-click="_confirmOk" class="primary">[[confirmOkLabel]]</paper-button>
-        </div>
-      </nuxeo-dialog>
-
-      <!-- Display the result of the action, if needed -->
-      <nuxeo-dialog id="resultDialog" with-backdrop>
-        <h3>Result for <span style="font-style:  italic">[[confirmAction]]</span></h3>
-
-        <template is="dom-if" if="[[resultActionDetails]]">
-          <paper-textarea value="[[resultActionDetails]]" readonly></paper-textarea>
-        </template>
-
-        <!-- Distribution result -->
-        <template is="dom-if" if="[[distributionResult]]">
-          <nuxeo-card header="Result for Nuxeo Distribution">
-
-            <div role="widget">
-              <div style="color:black;font-weight:bold;">Nuxeo Application</div>
-              <div>[[distributionResult.applicationName]] [[distributionResult.applicationVersion]]</div>
-            </div>
-
-            <div role="widget">
-              <div style="color:black;font-weight:bold;">Nuxeo Distribution</div>
-              <div>[[distributionResult.distributionName]] [[distributionResult.distributionVersion]] (date: [[distributionResult.distributionDate]])</div>
-            </div>
-
-            <div role="widget">
-              <div style="color:black;font-weight:bold;">Bundles</div>
-              <div class="scrollableTable">
-                <table style="height: 300px">
-                    <template is="dom-repeat" items="[[distributionResult.bundles]]">
-                      <tr>
-                        <td width="60%">[[item.name]]</td>
-                        <td>[[item.version]]</td>
-                      </tr>
-                    </template>
-                </table>
-              </div>
-            </div>
-          </nuxeo-card>
-        </template>
-
-        <div class="buttons" style="float: right;">
-          <paper-button dialog-dismiss class="primary" on-click="_resultDialogClosed">Ok</paper-button>
-        </div>
-      </nuxeo-dialog>
 
     </nuxeo-page>
 
   </template>
 
   <script>
-    const GET_DISTRIBUTION = "Nuxeo Distribution";
-
     Polymer({
       is: 'nuxeo-admin-center',
       behaviors: [Nuxeo.LayoutBehavior],
       properties: {
-        confirmAction: String,
-        confirmPrompt: String,
-        confirmInfo: String,
-        url: String,
-        method: String,
-        confirmOkLabel: {
-          type: String,
-          value: "Ok"
-        },
-        displayProgressStyle: {
-          type: String,
-          value: "none"
-        },
-        progressTimer: {
-          type: Number,
-          value: Date.now()
-        },
-        resultActionDetails: String,
-        deleteOrphanedBinariesResult: Object,
-        distributionResult: Object,
-        displayProgress: {
-          type: Boolean,
-          value: true
-        }
-      },
-
-      // ====================================
-      // Nuxeo distribution
-      // ====================================
-      _getDistribution: function() {
-        this.confirmAction = GET_DISTRIBUTION;
-        this.confirmPrompt = "Get Nuxeo distribution info?";
-        this.confirmInfo = ""
-        this.confirmOkLabel = "Ok";
-
-        this.url = "/nuxeo/api/v1/management/distribution";
-        this.method = "GET";
-
-        this.displayProgress = false;
-
-        this.$.confirmDialog.toggle();
-      },
-
-      _getDistributionResponse: function(evt, req) {
-
-        this._cleanUpResultDialogValues();
-        this.distributionResult = evt.detail.response;
-        /*
-        let bundlesAsString = "";
-        this.distributionResult.bundles.forEach(function(bundle) {
-          bundlesAsString +=  `${bundle.name}   v${bundle.version}\n`;
-        });
-        this.distributionResult.bundlesAsString = bundlesAsString;
-        */
-        this.$.resultDialog.toggle();
-      },
-
-      // ====================================
-      // Success/Failure of the ajax call
-      // ====================================
-      // Impossible ti get the result dialog displayed, nor the page
-      // correctlmy refreshed. I believe the error occuring breaks
-      // and maybe bubbles something.
-      // => Simple alert, and the a reload()
-      _ajaxCallFailure: function(evt, req) {
-        alert("An error occured when running " + this.confirmAction + ":\n\n" + evt.detail.error.stack);
-        this._cleanUpResultDialogValues();
-        this._cleanupConfirmDialog();
-        location.reload();
-      },
-
-      // When the call is succesful, but too fast, we let the progress a little bit
-      _ajaxCallSuccess: function(evt, req) {
-
-        let reminder = 3000 - (Date.now() - this.progressTimer);
-        if(reminder > 500) {
-          setTimeout(function() {
-            this._ajaxCallSuccessRun(evt, req);
-          }.bind(this), reminder);
-        } else {
-          this._ajaxCallSuccessRun(evt, req);
-        }
-      },
-
-      _ajaxCallSuccessRun: function(evt, req) {
-
-        switch (this.confirmAction) {
-        case GET_DISTRIBUTION:
-          this._getDistributionResponse(evt, req);
-          break;
-
-        default:
-          this._cleanupConfirmDialog();
-          break;
-        }
-      },
-
-      // ====================================
-      // Confirm and result dialogs handling
-      // ====================================
-      _cleanupConfirmDialog: function() {
-        this.confirmAction = null;
-        this.confirmPrompt = null;
-        this.confirmInfo = "";
-        this.confirmOkLabel = "Ok";
-        this.resultActionDetails = null;
-
-        this.url = null;
-        this.method = null;
-
-        this.displayProgressStyle = "none";
-        this.$.progress.disabled = true;
-
-        this.displayProgress = false;
-
-        this.$.confirmDialog.close();
-      },
-
-      _confirmCancel: function() {
-        this._cleanupConfirmDialog();
-      },
-
-      _confirmOk: function() {
-        if(this.displayProgress) {
-          this.$.progress.disabled = false;
-          this.displayProgressStyle = "";
-          this.progressTimer = Date.now();
-        }
-
-        switch (this.confirmAction) {
-        case GET_DISTRIBUTION:
-          this.$.callAjax.generateRequest();
-          break;
-
-        default:
-          this._cleanupConfirmDialog();
-          break;
-        }
-      },
-
-      _cleanUpResultDialogValues: function() {
-        this.resultActionDetails = null;
-        this.deleteOrphanedBinariesResult = null;
-        this.distributionResult = null;
-      },
-
-      _resultDialogClosed: function() {
-        this._cleanupConfirmDialog();
       },
     });
   </script>
