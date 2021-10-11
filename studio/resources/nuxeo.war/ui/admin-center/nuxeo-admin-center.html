@@ -1,6 +1,7 @@
 <link rel="import" href="admin-orphaned-binaries.html">
 <link rel="import" href="admin-nuxeo-distribution.html">
 <link rel="import" href="admin-nuxeo-probes.html">
+<link rel="import" href="admin-status.html">
 
 <dom-module id="nuxeo-admin-center">
   <template>
@@ -10,8 +11,15 @@
     }
 
     .content {
-      max-width: 50%;
       background-color: white;
+    }
+
+    .withMarginLeft {
+      margin-left: 20px;
+    }
+
+    .card {
+      margin:  20px;
     }
     </style>
 
@@ -22,15 +30,21 @@
       </div>
 
       <div class="content">
-        <nuxeo-card heading="">
-          <div class="layout horizontal">
-            <admin-nuxeo-distribution></admin-nuxeo-distribution>
 
-            <admin-orphaned-binaries class="actionButton"></admin-orphaned-binaries>
-            
-            <admin-nuxeo-probes class="actionButton"></admin-nuxeo-probes>
-          </div>
-        </nuxeo-card>
+        <div class="layout horizontal">
+
+          <admin-status heading="Status" class="card"></admin-status>
+
+          <nuxeo-card heading="Actions" class="card">
+            <div class="layout horizontal">
+              <admin-nuxeo-distribution></admin-nuxeo-distribution>
+
+              <admin-orphaned-binaries class="actionButton"></admin-orphaned-binaries>
+              
+              <admin-nuxeo-probes class="actionButton"></admin-nuxeo-probes>
+            </div>
+          </nuxeo-card>
+        </div>
 
         <nuxeo-card>
           <div class="layout vertical">
@@ -52,7 +66,7 @@
       is: 'nuxeo-admin-center',
       behaviors: [Nuxeo.LayoutBehavior],
       properties: {
-      },
+      }
     });
   </script>
 </dom-module>
