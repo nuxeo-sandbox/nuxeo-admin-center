@@ -2,6 +2,7 @@
 `nuxeo-admin-confirm`
 
 Displays a confirm dialog. Event are raised when the user clicks Ok or Cancel button.
+If a prompt was required, the parameter of the callback contains the value (see example)
 
 --------------------
 Examples
@@ -15,6 +16,15 @@ With more properties:
                      confirm-prompt="Delete the orphaned binaries?"
                      confirm-info="This operaiton is asynchrnous and can take time: Be patient and monitor the log."
                      confirm-ok-label="Delete"></nuxeo-admin-confirm>
+
+Request the user to enter something.
+See in the callback how to get the value entered by the user
+<nuxeo-admin-confirm id="myDialog"
+                     confirm-prompt="Recalculate thumbnails?"
+                     confirm-info="Enter the NXQL query to use"
+                     prompt="SELECT * FROM Document WHERE ecm:mixinType = 'Picture' AND picture:views/*/title IS NULL"
+                     is-prompt>
+                     </nuxeo-admin-confirm>
 
 --------------------
 Usage
@@ -46,7 +56,31 @@ In the script of your element, add listeners for "adminDialogOk"/"adminDialogCan
   jsListenerForCancel: function() {
     . . . do something . . .
   },
+
+
+If a prompt was used, the value is the second parameter of the call back, a JSON object
+with a "prompt" property:
+<nuxeo-admin-confirm id="myDialog"
+                     confirm-prompt="Recalculate thumbnails?"
+                     confirm-info="Enter the NXQL query to use"
+                     prompt="SELECT * FROM Document WHERE ecm:mixinType = 'Picture' AND picture:views/*/title IS NULL"
+                     is-prompt>
+                     </nuxeo-admin-confirm>
+
+. . .
+<script>
+  . . .
+
+  listeners: {
+    "adminDialogOk": 'jsListenerForOk',
+    "adminDialogCancel": 'jsListenerForCancel'
+  },
+
+  jsListenerForOk: function(evt, result) {
+    result.prompt has the value entered by the user
+  },
 -->
+
 <dom-module id="nuxeo-admin-confirm">
   <template>
     <style include="iron-flex iron-flex-alignment nuxeo-styles">
@@ -73,6 +107,9 @@ In the script of your element, add listeners for "adminDialogOk"/"adminDialogCan
       <div class="confirmInfo">
         [[confirmInfo]]
       </div>
+      <template is="dom-if" if="[[isPrompt]]">
+        <nuxeo-input value="{{prompt}}"></nuxeo-input>
+      </template>
 
       <div class="buttons">
         <paper-button dialog-dismiss class="secondary" on-click="_confirmCancel">Cancel</paper-button>
@@ -93,6 +130,11 @@ In the script of your element, add listeners for "adminDialogOk"/"adminDialogCan
         confirmOkLabel: {
           type: String,
           value: "Ok"
+        },
+        prompt: String,
+        isPrompt: {
+          type: Boolean,
+          value: false
         }
       },
 
@@ -112,7 +154,7 @@ In the script of your element, add listeners for "adminDialogOk"/"adminDialogCan
 
       _confirmOk: function() {
         this._cleanupDialog();
-        this.fire('adminDialogOk');
+        this.fire('adminDialogOk', {"prompt": this.prompt});
       },
 
       _confirmCancel: function() {
