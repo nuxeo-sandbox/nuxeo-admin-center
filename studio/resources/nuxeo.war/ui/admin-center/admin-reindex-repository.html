@@ -8,6 +8,8 @@
 
   There is no properties to set, usage is simple after importing the element:
   <admin-reindex-repository></admin-reindex-repository>
+
+  The width of the button can be set in the :host style via the --admin-button-width variable
 -->
 <link rel="import" href="nuxeo-admin-confirm.html">
 <dom-module id="admin-reindex-repository">
@@ -16,6 +18,10 @@
 
     nuxeo-dialog {
       max-width: 700px;
+    }
+
+    #reindexButton {
+      width:  var(--admin-button-width);
     }
     </style>
 

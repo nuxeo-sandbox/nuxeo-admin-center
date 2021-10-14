@@ -10,11 +10,17 @@
 
   There is no properties to set, usage is simple after importing the element:
   <admin-orphaned-binaries></admin-orphaned-binaries>
+
+  The width of the button can be set in the :host style via the --admin-button-width variable
 -->
 <link rel="import" href="nuxeo-admin-confirm.html">
 <dom-module id="admin-orphaned-binaries">
   <template>
     <style include="iron-flex iron-flex-alignment nuxeo-styles">
+
+    #deleteOrphanedBinariesButton {
+      width:  var(--admin-button-width);
+    }
 
     .progressDiv {
       width: 80%;

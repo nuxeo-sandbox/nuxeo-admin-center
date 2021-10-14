@@ -7,10 +7,16 @@
 
   There is no properties to set, usage is simple after importing the element:
   <admin-nuxeo-probes></admin-nuxeo-probes>
+
+  The width of the button can be set in the :host style via the --admin-button-width variable
 -->
 <dom-module id="admin-nuxeo-probes">
   <template>
     <style include="iron-flex iron-flex-alignment nuxeo-styles">
+
+    #getProbesButton {
+      width:  var(--admin-button-width);
+    }
 
     nuxeo-dialog {
       max-width: 700px;

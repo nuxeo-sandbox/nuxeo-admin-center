@@ -8,6 +8,11 @@
 <dom-module id="nuxeo-admin-center">
   <template>
     <style include="iron-flex iron-flex-alignment nuxeo-styles">
+
+    /* Used by all sub-elements for a fixed width of every button*/
+    :host {
+      --admin-button-width:  300px;
+    }
     .actionButton {
       margin-left:  25px;
     }
@@ -42,16 +47,14 @@
           <admin-status heading="Status" class="card"></admin-status>
 
           <nuxeo-card heading="Actions" class="card">
-            <div class="layout horizontal">
-              <admin-nuxeo-distribution></admin-nuxeo-distribution>
-
+            <div class="layout horizontal flex">
+              <admin-nuxeo-distribution class="layout flex"></admin-nuxeo-distribution>
               <admin-orphaned-binaries class="actionButton"></admin-orphaned-binaries>
-              
               <admin-nuxeo-probes class="actionButton"></admin-nuxeo-probes>
             </div>
 
             <div class="layout horizontal moreSpaceAbove">
-              <admin-reindex-repository></admin-reindex-repository>
+              <admin-reindex-repository button-width="300px"></admin-reindex-repository>
               <admin-recompute-views class="actionButton"></admin-recompute-views>
             </div>
           </nuxeo-card>
@@ -66,6 +69,7 @@
             </ul>
           </div>
         </nuxeo-card>
+        
       </div>
 
     </nuxeo-page>

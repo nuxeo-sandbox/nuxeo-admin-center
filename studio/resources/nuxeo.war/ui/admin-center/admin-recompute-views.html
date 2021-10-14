@@ -7,12 +7,16 @@
 
   There is no properties to set, usage is simple after importing the element:
   <admin-recompute-views></admin-recompute-views>
+
+  The width of the button can be set in the :host style via the --admin-button-width variable
 -->
 <link rel="import" href="nuxeo-admin-confirm.html">
 <dom-module id="admin-recompute-views">
   <template>
     <style include="iron-flex iron-flex-alignment nuxeo-styles">
-
+    #recomputeViewsButton {
+      width:  var(--admin-button-width);
+    }
     </style>
 
     <nuxeo-operation id="recomputeViewsOp"
@@ -21,7 +25,7 @@
     <paper-button id="recomputeViewsButton"
                   raised noink
                   on-tap="_recomputeViews">
-      Recompute picture:views
+      Recompute <code style="margin-left: 10px">picture:views</code>
     </paper-button>
 
     <nuxeo-admin-confirm id="adminConfirmDialog"
