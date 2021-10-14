@@ -85,6 +85,17 @@ with a "prompt" property:
   <template>
     <style include="iron-flex iron-flex-alignment nuxeo-styles">
 
+    /* see https://stackoverflow.com/questions/34696452/how-to-use-a-fixed-font-in-polymers-paper-textarea */
+    paper-textarea {
+      --iron-autogrow-textarea: {
+          font-family: monospace;
+          font-size: smaller;
+          word-break: break-all;
+        };
+      margin-top: 0;
+      margin-left:  15px;
+    }
+
     nuxeo-dialog {
       max-width: 700px;
     }
@@ -93,26 +104,33 @@ with a "prompt" property:
       font-size: larger;
     }
 
+    .promptLabel {
+    }
+
     /* Work-around missalignment of the OK button */
     .buttons {
       padding-right: 24px;
       padding-bottom: 12px;
     }
-
-    .textarea {
-      font-family: monospace !important;
-    }
+}
     </style>
 
     <nuxeo-dialog id="confirmDialog" with-backdrop>
       <div class="confirmPrompt">
         [[confirmPrompt]]
       </div>
-      <div class="confirmInfo">
-        [[confirmInfo]]
-      </div>
+      <template is="dom-if" if="[[confirmInfo]]">
+        <div>
+          [[confirmInfo]]
+        </div>
+      </template>
       <template is="dom-if" if="[[isPrompt]]">
-        <nuxeo-textarea value="{{prompt}}"></nuxeo-textarea>
+        <template is="dom-if" if="[[promptLabel]]">
+          <div class="promptLabel">
+            [[promptLabel]]
+          </div>
+        </template>
+        <paper-textarea value="{{prompt}}"></paper-textarea>
       </template>
 
       <div class="buttons">
@@ -136,6 +154,7 @@ with a "prompt" property:
           value: "Ok"
         },
         prompt: String,
+        promptLabel: String,
         isPrompt: {
           type: Boolean,
           value: false

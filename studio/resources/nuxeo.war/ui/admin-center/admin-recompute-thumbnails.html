@@ -30,7 +30,8 @@
 
     <nuxeo-admin-confirm id="adminConfirmDialog"
                          confirm-prompt="Recompute thumbnails?"
-                         confirm-info="Enter the NXQL query to use:"
+                         confirm-info="Enter the NXQL query to use."
+                         prompt-label="Thumbnails will be recomputed for the documents returned by this query."
                          prompt="SELECT * FROM Document WHERE ecm:mixinType = 'Thumbnail' AND thumb:thumbnail/data IS NULL AND ecm:isVersion = 0 AND ecm:isProxy = 0 AND ecm:isTrashed = 0"
                          is-prompt
                          confirm-ok-label="Recompute"></nuxeo-admin-confirm>
