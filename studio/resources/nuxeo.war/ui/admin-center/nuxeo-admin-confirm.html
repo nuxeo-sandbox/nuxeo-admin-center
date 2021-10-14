@@ -98,6 +98,10 @@ with a "prompt" property:
       padding-right: 24px;
       padding-bottom: 12px;
     }
+
+    .textarea {
+      font-family: monospace !important;
+    }
     </style>
 
     <nuxeo-dialog id="confirmDialog" with-backdrop>
@@ -108,7 +112,7 @@ with a "prompt" property:
         [[confirmInfo]]
       </div>
       <template is="dom-if" if="[[isPrompt]]">
-        <nuxeo-input value="{{prompt}}"></nuxeo-input>
+        <nuxeo-textarea value="{{prompt}}"></nuxeo-textarea>
       </template>
 
       <div class="buttons">
