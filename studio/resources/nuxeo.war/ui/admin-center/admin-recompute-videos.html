@@ -1,0 +1,183 @@
+<!--
+  `admin-recompute-videos`
+
+  Displays a button allowing for recomputing video renditions
+
+  User must be an administrator or an authorized user.
+
+  There is no properties to set, usage is simple after importing the element:
+  <admin-recompute-videos></admin-recompute-videos>
+
+  The width of the button can be set in the :host style via the --admin-button-width variable
+-->
+<link rel="import" href="nuxeo-admin-confirm.html">
+<dom-module id="admin-recompute-videos">
+  <template>
+    <style include="iron-flex iron-flex-alignment nuxeo-styles">
+    #recomputeVideosButton {
+      width:  var(--admin-button-width);
+    }
+
+    /* Used for the confim dialog */
+    /* see https://stackoverflow.com/questions/34696452/how-to-use-a-fixed-font-in-polymers-paper-textarea */
+    paper-textarea {
+      --iron-autogrow-textarea: {
+          font-family: monospace;
+          font-size: smaller;
+          word-break: break-all;
+        };
+      margin-top: 0;
+      margin-left:  15px;
+    }
+
+    nuxeo-dialog {
+      max-width: 700px;
+    }
+
+    .confirmPrompt {
+      font-size: larger;
+    }
+
+    .promptLabel {
+    }
+
+    /* Work-around missalignment of the OK button */
+    .buttons {
+      padding-right: 24px;
+      padding-bottom: 12px;
+    }
+
+    /* Can't have bold label :-/ */
+    .label {
+      color: black;
+      font-weight: bold;
+    }
+
+    /* Other styles */
+    </style>
+
+    <iron-ajax id="callAjax"
+               url="/nuxeo/api/v1/management/videos/recompute/"
+               method="post"
+               on-response="_ajaxCallSuccess"
+               on-error="_ajaxCallFailure">
+    </iron-ajax>
+
+    <paper-button id="recomputeVideosButton"
+                  raised noink
+                  on-tap="_recomputeVideos">
+      Recompute Videos</code>
+    </paper-button>
+
+    <nuxeo-dialog id="confirmDialog" with-backdrop>
+      <div class="confirmPrompt">
+        Recompute Video Renditions?
+      </div>
+
+      <div>
+        <div class="label">NXQL Query</div>
+        Videos will be recomputed for the documents returned by this query.
+      </div>
+      <paper-textarea value="{{nxql}}"></paper-textarea>
+
+      <div>
+        <div class="label">Conversions to Recompute</div>
+        <span>Enter a comma-separated list<span>
+        <br/>
+        <span>If let emply, every enabled conversion is recomputed.</span>
+        <nuxeo-textarea value="{{conversionNames}}" placeholder="MP4 480p,WebM 480p"></nuxeo-textarea>
+
+      </div>
+
+      <div>
+        <div class="label">Video Info</div>
+        <paper-checkbox checked="{{recomputeAllVideoInfo}}">
+          Also Recompute Video Info
+        </paper-checkbox></div>
+      </div>
+
+      <div class="buttons">
+        <paper-button dialog-dismiss class="secondary" on-click="_confirmCancel">Cancel</paper-button>
+        <paper-button on-click="_confirmOk" class="primary">Recompute</paper-button>
+      </div>
+    </nuxeo-dialog>
+
+    <!-- Display the result -->
+    <nuxeo-dialog id="resultDialog" with-backdrop>
+      <h3>Recompute Videos</h3>
+
+      <p>
+        The videos are being recomputed.<br/>
+        It is an asynchronous process: Please, monitor the log to check once it is done.
+      </p>
+
+      <div class="buttons" style="float: right;">
+        <paper-button id="resultOkButton" dialog-dismiss class="primary">Ok</paper-button>
+      </div>
+    </nuxeo-dialog>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'admin-recompute-videos',
+      behaviors: [Nuxeo.LayoutBehavior],
+      properties: {
+        nxql: {
+          type: String,
+          value: "SELECT * FROM Document WHERE ecm:mixinType = 'Video' AND ecm:isProxy = 0 AND ecm:isVersion = 0 AND vid:transcodedVideos/0/name IS NULL"
+        },
+        conversionNames: {
+          type: String,
+          value: ""
+        },
+        recomputeAllVideoInfo: {
+          type: Boolean,
+          value: false
+        }
+      },
+
+      // Button is clicked
+      _recomputeVideos: function() {
+        this.$.confirmDialog.toggle();
+      },
+
+      // nuxeo-admin-confirm dialog OK button clicked
+      _confirmOk: function(evt, result) {
+        let txt = "Parameters:\n";
+        txt += "Query:\n" + this.nxql + "\n\n";
+        txt += "Renditions: " + (this.conversionNames === "" ? "All" : this.conversionNames) + "\n\n";
+        txt += "Recompute video info: " + this.recomputeAllVideoInfo;
+        if(!confirm(txt)) {
+          this.$.confirmDialog.close();
+          return;
+        }
+
+        let body = {
+          "query": this.nxql,
+          "conversionNames": this.conversionNames,
+          "recomputeAllVideoInfo": this.recomputeAllVideoInfo
+        };
+        this.$.callAjax.body = JSON.stringify(body);
+        this.$.callAjax.contentType = 'application/json';
+
+        this.$.callAjax.generateRequest();
+      },
+
+      _confirmCancel: function() {
+        // Nothing
+      },
+
+      _ajaxCallSuccess: function(evt, req) {
+        this.$.confirmDialog.close();
+        this.$.resultDialog.toggle();
+      },
+
+      _ajaxCallFailure: function(evt, req) {
+        alert("An error occured when running <Recompute Videos>:\n\n" + evt.detail.error.stack);
+        this.$.confirmDialog.close();
+        location.reload();
+      }
+    });
+  </script>
+</dom-module>

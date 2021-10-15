@@ -5,6 +5,7 @@
 <link rel="import" href="admin-reindex-repository.html">
 <link rel="import" href="admin-recompute-views.html">
 <link rel="import" href="admin-recompute-thumbnails.html">
+<link rel="import" href="admin-recompute-videos.html">
 
 <dom-module id="nuxeo-admin-center">
   <template>
@@ -58,6 +59,10 @@
               <admin-reindex-repository></admin-reindex-repository>
               <admin-recompute-views class="actionButton"></admin-recompute-views>
               <admin-recompute-thumbnails class="actionButton"></admin-recompute-thumbnails>
+            </div>
+
+            <div class="layout horizontal moreSpaceAbove">
+              <admin-recompute-videos></admin-recompute-videos>
             </div>
           </nuxeo-card>
         </div>
