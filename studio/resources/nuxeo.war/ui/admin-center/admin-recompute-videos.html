@@ -153,9 +153,18 @@
           return;
         }
 
+        let conversions = this.conversionNames;
+        if(conversions) {
+          conversions = conversions.split(",");
+          for(let i = 0; i < conversions.length; i++) {
+            conversions[i] = conversions[i].trim();
+          }
+        } else {
+          conversions = [];
+        }
         let body = {
           "query": this.nxql,
-          "conversionNames": this.conversionNames,
+          "conversionNames": conversions,
           "recomputeAllVideoInfo": this.recomputeAllVideoInfo
         };
         this.$.callAjax.body = JSON.stringify(body);
