@@ -156,19 +156,18 @@
         let conversions = this.conversionNames;
         if(conversions) {
           conversions = conversions.split(",");
-          for(let i = 0; i < conversions.length; i++) {
-            conversions[i] = conversions[i].trim();
-          }
+          conversions = conversions.map(entry => entry.trim);
         } else {
           conversions = [];
         }
-        let body = {
-          "query": this.nxql,
-          "conversionNames": conversions,
-          "recomputeAllVideoInfo": this.recomputeAllVideoInfo
-        };
-        this.$.callAjax.body = JSON.stringify(body);
-        this.$.callAjax.contentType = 'application/json';
+ 
+        var urlencoded = new URLSearchParams();
+        urlencoded.append("query", this.nxql);
+        urlencoded.append("recomputeAllVideoInfo", this.recomputeAllVideoInfo);
+        conversions.forEach(conversion => urlencoded.append(conversionNames,conversion));
+
+        this.$.callAjax.body = urlencoded;
+        this.$.callAjax.contentType = 'application/x-www-form-urlencoded';
 
         this.$.callAjax.generateRequest();
       },
