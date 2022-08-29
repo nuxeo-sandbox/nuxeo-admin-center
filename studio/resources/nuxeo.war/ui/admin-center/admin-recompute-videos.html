@@ -56,13 +56,6 @@
     /* Other styles */
     </style>
 
-    <iron-ajax id="callAjax"
-               url="/nuxeo/api/v1/management/videos/recompute/"
-               method="post"
-               on-response="_ajaxCallSuccess"
-               on-error="_ajaxCallFailure">
-    </iron-ajax>
-
     <paper-button id="recomputeVideosButton"
                   raised noink
                   on-tap="_recomputeVideos">
@@ -155,35 +148,35 @@
         let conversions = this.conversionNames;
         if(conversions) {
           conversions = conversions.split(",");
-          conversions = conversions.map(entry => entry.trim);
+          conversions = conversions.map(entry => entry.trim());
         } else {
           conversions = [];
         }
  
-        var params = {};
-        params.query=this.nxql;
-        params.recomputeAllVideoInfo = this.recomputeAllVideoInfo;
-        params.conversionNames = conversions;
-
-        this.$.callAjax.body = urlencoded;
-        this.$.callAjax.contentType = 'application/x-www-form-urlencoded';
-
-        this.$.callAjax.generateRequest();
+        let params = new URLSearchParams();
+        params.append('query',this.nxql);
+        params.append('recomputeAllVideoInfo', this.recomputeAllVideoInfo);
+        conversions.forEach(conversion => params.append('conversionNames',conversion));
+        
+        fetch('/nuxeo/api/v1/management/videos/recompute/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: params
+        }).then((response) => {
+          if (!response.ok) {
+            alert("An error occured when running <Recompute Videos>");
+            this.$.confirmDialog.close();
+          } else {
+            this.$.confirmDialog.close();
+            this.$.resultDialog.toggle();
+          }
+        });
       },
 
       _confirmCancel: function() {
         // Nothing
-      },
-
-      _ajaxCallSuccess: function(evt, req) {
-        this.$.confirmDialog.close();
-        this.$.resultDialog.toggle();
-      },
-
-      _ajaxCallFailure: function(evt, req) {
-        alert("An error occured when running <Recompute Videos>:\n\n" + evt.detail.error.stack);
-        this.$.confirmDialog.close();
-        location.reload();
       }
     });
   </script>
