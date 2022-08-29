@@ -66,7 +66,7 @@
     <paper-button id="recomputeVideosButton"
                   raised noink
                   on-tap="_recomputeVideos">
-      Recompute Videos</code>
+      Recompute Videos
     </paper-button>
 
     <nuxeo-dialog id="confirmDialog" with-backdrop>
@@ -76,24 +76,23 @@
 
       <div>
         <div class="label">NXQL Query</div>
-        Videos will be recomputed for the documents returned by this query.
+        <div>Videos will be recomputed for the documents returned by this query.</div>
       </div>
       <paper-textarea value="{{nxql}}"></paper-textarea>
 
       <div>
         <div class="label">Conversions to Recompute</div>
-        <span>Enter a comma-separated list<span>
+        <span>Enter a comma-separated list</span>
         <br/>
         <span>If let empty, every enabled conversion is recomputed.</span>
         <nuxeo-textarea value="{{conversionNames}}" placeholder="Ex.: MP4 480p,WebM 480p"></nuxeo-textarea>
-
       </div>
 
       <div>
         <div class="label">Video Info</div>
         <paper-checkbox checked="{{recomputeAllVideoInfo}}">
           Also Recompute Video Info
-        </paper-checkbox></div>
+        </paper-checkbox>
       </div>
 
       <div class="buttons">
