@@ -160,10 +160,10 @@
           conversions = [];
         }
  
-        var urlencoded = new URLSearchParams();
-        urlencoded.append("query", this.nxql);
-        urlencoded.append("recomputeAllVideoInfo", this.recomputeAllVideoInfo);
-        conversions.forEach(conversion => urlencoded.append("conversionNames",conversion));
+        var params = {};
+        params.query=this.nxql;
+        params.recomputeAllVideoInfo = this.recomputeAllVideoInfo;
+        params.conversionNames = conversions;
 
         this.$.callAjax.body = urlencoded;
         this.$.callAjax.contentType = 'application/x-www-form-urlencoded';
