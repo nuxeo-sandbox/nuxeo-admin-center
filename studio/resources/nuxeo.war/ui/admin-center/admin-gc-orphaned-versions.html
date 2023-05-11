@@ -57,7 +57,7 @@
 
       // Button is clicked
       _gcOrphanedVersions: function() {
-        if(confirm("Context: \"A version stays referenced, and therefore is not removed, if any proxy points to a version in the version history of any live document, or in the case of tree snapshot if there is a snapshot containing a version in the version history of any live document.\"\n\nStart the Garbage Collection of Orphaned Versions bulk action?")) {
+        if(confirm("Context: \"A version stays referenced, and therefore is not removed, if any proxy points to a version in the version history of any live document, or in the case of tree snapshot if there is a snapshot containing a version in the version history of any live document.\"\n(See NXP-27139 for more details)\n\nStart the Garbage Collection of Orphaned Versions bulk action?")) {
           this.$.callAjax.generateRequest();
         }
         
