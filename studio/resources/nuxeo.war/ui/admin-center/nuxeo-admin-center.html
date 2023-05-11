@@ -8,6 +8,7 @@
 <link rel="import" href="admin-recompute-videos.html">
 <link rel="import" href="admin-page-providers.html">
 <link rel="import" href="admin-gc-orphaned-versions.html">
+<link rel="import" href="admin-gc-workflows.html">
 
 <dom-module id="nuxeo-admin-center">
   <template>
@@ -140,6 +141,16 @@
                 <admin-gc-orphaned-versions class="actionButton"></admin-gc-orphaned-versions>
                 <div class="actionButton actionInfo">
                   <span class="moreInfo">(Available for Nuxeo LTS >= 2021.31)</span>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="layout horizontal flex moreSpaceAbove">
+              <div class="action firstAction">
+                <admin-gc-workflows></admin-gc-workflows>
+                <div class="actionInfo">
+                  Garbage collect all the orphaned workflows (for which all associated documents have been removed) as well as workflows in state 'done' or 'canceled'.
                 </div>
               </div>
             </div>
