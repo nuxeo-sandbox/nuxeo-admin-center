@@ -4,6 +4,8 @@
 Displays a confirm dialog. Event are raised when the user clicks Ok or Cancel button.
 If a prompt was required, the parameter of the callback contains the value (see example)
 
+The confirmInfo property can be HTML. If it is not and contains \n, they are replaced with a <br />
+
 --------------------
 Examples
 --------------------
@@ -14,7 +16,7 @@ Simple call:
 With more properties:
 <nuxeo-admin-confirm id="myDialog"
                      confirm-prompt="Delete the orphaned binaries?"
-                     confirm-info="This operaiton is asynchrnous and can take time: Be patient and monitor the log."
+                     confirm-info="This operation is asynchronous and can take time: Be patient and monitor the log."
                      confirm-ok-label="Delete"></nuxeo-admin-confirm>
 
 Request the user to enter something.
@@ -25,6 +27,13 @@ See in the callback how to get the value entered by the user
                      prompt="SELECT * FROM Document WHERE ecm:mixinType = 'Picture' AND picture:views/*/title IS NULL"
                      is-prompt>
                      </nuxeo-admin-confirm>
+
+With HTML for nice layout:
+<nuxeo-admin-confirm id="myDialog"
+                     confirm-info="This operation is asynchronous and can take time: Be patient and monitor the log.\n\n"
+                     . . .</nuxeo-admin-confirm>
+
+
 
 --------------------
 Usage
@@ -118,11 +127,10 @@ with a "prompt" property:
       <div class="confirmPrompt">
         [[confirmPrompt]]
       </div>
-      <template is="dom-if" if="[[confirmInfo]]">
-        <div>
-          [[confirmInfo]]
-        </div>
-      </template>
+      
+      <div id="confirmInfoDiv">
+      </div>
+
       <template is="dom-if" if="[[isPrompt]]">
         <template is="dom-if" if="[[promptLabel]]">
           <div class="promptLabel">
@@ -157,6 +165,19 @@ with a "prompt" property:
         isPrompt: {
           type: Boolean,
           value: false
+        }
+      },
+
+      ready: function() {
+        // Need to wait for the div to be appeneded to the DOM
+        this._displayConfirmInfo();
+      },
+
+      _displayConfirmInfo: function() {
+        let confirmInfo = this.confirmInfo;
+        if(confirmInfo && this.$.confirmInfoDiv) {
+          confirmInfo = confirmInfo.split('\\n').join('<br />');
+          this.$.confirmInfoDiv.innerHTML = confirmInfo;
         }
       },
 
