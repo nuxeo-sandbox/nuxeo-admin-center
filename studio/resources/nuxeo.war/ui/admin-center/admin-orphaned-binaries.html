@@ -64,7 +64,7 @@
 
     <nuxeo-admin-confirm id="adminConfirmDialog"
                          confirm-prompt="Delete the orphaned binaries?"
-                         confirm-info="This is a synchronous call, it can take time if there are a lot of orphaned binaries: Be patient (and monitor server.log fo errors).<br /><br />ℹ️ <span style='font-size: smaller'>Also, notice that since LTS 2021.32, cleaning of binaries is automatic when storage is MongoDB (so, deleting a document automatically deletes its binaries if no other document is linked to them). If your data was first deployed in this context, the feature will find no orphaned binaries and this is normal.</span>"
+                         confirm-info="This is a synchronous call, it can take time if there are a lot of orphaned binaries: Be patient (and monitor server.log for errors).<br /><br />ℹ️ <span style='font-size: smaller'>Also, notice that since LTS 2021.35, cleaning of binaries is automatic when storage is MongoDB (so, deleting a document automatically deletes its binaries if no other document is linked to them), ecm:blobKeys capability is turned on, etc.: See NXP-31594.<br />If your data was first deployed in this context, the feature will find no orphaned binaries and this is normal.</span>"
                          confirm-ok-label="Delete"></nuxeo-admin-confirm>
 
     <!-- Display the result -->
