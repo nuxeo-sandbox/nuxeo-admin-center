@@ -6,6 +6,7 @@
 <link rel="import" href="admin-recompute-views.html">
 <link rel="import" href="admin-recompute-thumbnails.html">
 <link rel="import" href="admin-recompute-videos.html">
+<link rel="import" href="admin-page-providers.html">
 
 <dom-module id="nuxeo-admin-center">
   <template>
@@ -33,6 +34,11 @@
       max-width: var(--admin-button-width);
       margin-top:  10px;
       font-size: smaller;
+    }
+
+    .actionInfo .moreInfo {
+      font-size: x-small;
+      font-style: italic;
     }
 
     .actionButton {
@@ -116,6 +122,13 @@
                 <admin-reindex-repository></admin-reindex-repository>
                 <div class="actionInfo">
                   Re-index the whole repository (Elasticsearch index)
+                </div>
+              </div>
+              <div class="action">
+                <admin-page-providers class="actionButton"></admin-page-providers>
+                <div class="actionButton actionInfo">
+                  Display the page providers deployed (name and class)<br/>
+                  <span class="moreInfo">(Available for Nuxeo LTS >= 2021.34)</span>
                 </div>
               </div>
             </div>

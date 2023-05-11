@@ -1,0 +1,167 @@
+<!--
+  `admin-page-providers`
+
+  Displays a button allowing for fetching the list of page-providers
+
+  User must be an administrator or an authorized user.
+
+  There is no properties to set, usage is simple after importing the element:
+  <admin-page-providers></admin-page-providers>
+
+  The width of the button can be set in the :host style via the --admin-button-width variable
+-->
+<dom-module id="admin-page-providers">
+  <template>
+    <style include="iron-flex iron-flex-alignment nuxeo-styles">
+
+    #_getManagementResponse {
+      width:  var(--admin-button-width);
+    }
+
+    nuxeo-dialog {
+      max-width: 50%;
+    }
+
+    .scrollableTable {
+      height: 300px;
+      overflow: auto;
+      border-style: solid;
+      border-width: 1px;
+      border-color: grey;
+      padding: 5px;
+    }
+    </style>
+
+    <iron-ajax id="callAjax"
+               url="/nuxeo/api/v1/management/page-providers"
+               method="GET"
+               on-response="_getManagementResponse"
+               on-error="_ajaxCallFailure">
+    </iron-ajax>
+
+    <paper-button id="getPageProvidersButton"
+                  raised noink
+                  on-tap="_getPageProviders">
+      Page Providers
+    </paper-button>
+
+    <!-- Display the result -->
+    <nuxeo-dialog id="resultDialog" with-backdrop>
+      <h3>Page Providers</h3>
+
+      <nuxeo-card heading="Page Providers">
+        <div role="widget">
+          <!--
+          <div style="font-weight: bold">Bundles</div>
+          -->
+          <div class="scrollableTable">
+            <table style="height: 300px">
+                <template is="dom-repeat" items="[[pageProviders]]">
+                  <tr>
+                    <td width="33%">[[item.name]]</td>
+                    <td style="color:[[item.color]]">[[item.class]]</td>
+                  </tr>
+                </template>
+            </table>
+          </div>
+          <p>
+            <span style="color:#0aca00">Elasticsearch</span>: Class org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider
+            <br/>
+            <span style="color:#0aca00">(ClassName)</span>: Class using Elasticsearch
+            <br/>
+            <span style="color:#0c8abb">CoreQueryDocumentPageProvider</span>: Class org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider
+          </p>
+        </div>
+      </nuxeo-card>
+
+      <div class="buttons" style="float: right;">
+        <paper-button id="resultOkButton" dialog-dismiss class="primary" on-click="_resultDialogClosed">Ok</paper-button>
+      </div>
+    </nuxeo-dialog>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'admin-page-providers',
+      behaviors: [Nuxeo.LayoutBehavior],
+      properties: {
+        pageProviders: Array
+      },
+
+      // Button is clicked
+      _getPageProviders: function() {
+        // Reset values
+        this._cleanUpResultDialogValues();
+
+        // Call Nuxeo
+        this.$.callAjax.generateRequest();
+      },
+
+      // Callback from iron-ajax with success
+      _getManagementResponse: function(evt, req) {
+
+        this._cleanUpResultDialogValues();
+        let pageProviders = evt.detail.response;
+        pageProviders.sort((a, b) => {
+          let nameA = a.name.toLowerCase();
+          let nameB = b.name.toLowerCase();
+
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+
+          return 0;
+        });
+        this.pageProviders = pageProviders.map(el => {
+          el.color = "black";
+          switch (el.class) {
+          case "org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider":
+            el.class = "CoreQueryDocumentPageProvider";
+            el.color = "#0c8abb";
+            break;
+
+          case "org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider":
+            el.class = "Elasticsearch";
+            el.color = "#0aca00";
+            break;
+
+           default:
+            if(el.class.toLowerCase().indexOf("elasticsearch") > -1) {
+              let names = el.class.split(".");
+              el.class = names[ names.length - 1];
+              el.color = "#0aca00";
+            }
+
+          }
+
+          return el;
+        });
+        this.$.resultDialog.toggle();
+      },
+
+      // Ajax call failed
+      // Impossible to get the result dialog displayed, nor the page
+      // correctly refreshed. I believe the error occuring breaks
+      // and maybe bubbles something.
+      // => Simple alert, and then reload()
+      _ajaxCallFailure: function(evt, req) {
+        alert("An error occured when running <Get Nuxeo Distribution>:\n\n" + evt.detail.error.stack);
+        this._cleanUpResultDialogValues();
+        location.reload();
+      },
+
+      // Result dialogs handling
+      _cleanUpResultDialogValues: function() {
+        this.pageProviders = [];
+      },
+
+      _resultDialogClosed: function() {
+        this._cleanUpResultDialogValues();
+      }
+    });
+  </script>
+</dom-module>
