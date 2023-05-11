@@ -7,6 +7,7 @@
 <link rel="import" href="admin-recompute-thumbnails.html">
 <link rel="import" href="admin-recompute-videos.html">
 <link rel="import" href="admin-page-providers.html">
+<link rel="import" href="admin-gc-orphaned-versions.html">
 
 <dom-module id="nuxeo-admin-center">
   <template>
@@ -129,6 +130,12 @@
                 <div class="actionButton actionInfo">
                   Display the page providers deployed (name and class)<br/>
                   <span class="moreInfo">(Available for Nuxeo LTS >= 2021.34)</span>
+                </div>
+              </div>
+              <div class="action">
+                <admin-gc-orphaned-versions class="actionButton"></admin-gc-orphaned-versions>
+                <div class="actionButton actionInfo">
+                  <span class="moreInfo">(Available for Nuxeo LTS >= 2021.31)</span>
                 </div>
               </div>
             </div>

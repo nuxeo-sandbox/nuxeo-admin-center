@@ -1,0 +1,83 @@
+<!--
+  `admin-gc-orphaned-versions`
+
+  Displays a button allowing for deleting orphaned versions.
+
+  User must be an administrator or an authorized user.
+
+  There is no properties to set, usage is simple after importing the element:
+  <admin-gc-orphaned-versions></admin-gc-orphaned-versions>
+
+  The width of the button can be set in the :host style via the --admin-button-width variable
+-->
+<dom-module id="admin-gc-orphaned-versions">
+  <template>
+    <style include="iron-flex iron-flex-alignment nuxeo-styles">
+
+    #_getManagementResponse {
+      width:  var(--admin-button-width);
+    }
+
+    nuxeo-dialog {
+      max-width: 50%;
+    }
+
+    .scrollableTable {
+      height: 300px;
+      overflow: auto;
+      border-style: solid;
+      border-width: 1px;
+      border-color: grey;
+      padding: 5px;
+    }
+    </style>
+
+    <iron-ajax id="callAjax"
+               url="/nuxeo/api/v1/management/versions/orphaned"
+               method="DELETE"
+               on-response="_getManagementResponse"
+               on-error="_ajaxCallFailure">
+    </iron-ajax>
+
+    <paper-button id="gcOrphanedVersionsButton"
+                  raised noink
+                  on-tap="_gcOrphanedVersions">
+      Garbage Collect Orphaned Versions
+    </paper-button>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'admin-gc-orphaned-versions',
+      behaviors: [Nuxeo.LayoutBehavior],
+      properties: {
+        pageProviders: Array
+      },
+
+      // Button is clicked
+      _gcOrphanedVersions: function() {
+        if(confirm("Context: \"A version stays referenced, and therefore is not removed, if any proxy points to a version in the version history of any live document, or in the case of tree snapshot if there is a snapshot containing a version in the version history of any live document.\"\n\nStart the Garbage Collection of Orphaned Versions bulk action?")) {
+          this.$.callAjax.generateRequest();
+        }
+        
+      },
+
+      // Callback from iron-ajax with success
+      _getManagementResponse: function(evt, req) {
+        alert("Garbage collection of orphaned versions succesfully started.")
+      },
+
+      // Ajax call failed
+      // Impossible to get the result dialog displayed, nor the page
+      // correctly refreshed. I believe the error occuring breaks
+      // and maybe bubbles something.
+      // => Simple alert, and then reload()
+      _ajaxCallFailure: function(evt, req) {
+        alert("An error occured when running <Get Nuxeo Distribution>:\n\n" + evt.detail.error.stack);
+        this._cleanUpResultDialogValues();
+        location.reload();
+      }
+    });
+  </script>
+</dom-module>
