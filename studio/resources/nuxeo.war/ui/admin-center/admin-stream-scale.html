@@ -1,0 +1,317 @@
+<!--
+  `admin-stream-scale`
+
+  Displays a button allowing for fetching the list of page-providers
+
+  User must be an administrator or an authorized user.
+
+  There is no properties to set, usage is simple after importing the element:
+  <admin-stream-scale></admin-stream-scale>
+
+  The width of the button can be set in the :host style via the --admin-button-width variable
+-->
+<dom-module id="admin-stream-scale">
+  <template>
+    <style include="iron-flex iron-flex-alignment nuxeo-styles">
+
+    #getStreamScaleButton {
+      width:  var(--admin-button-width);
+    }
+
+    nuxeo-dialog {
+      max-width: 50%;
+    }
+
+    /* Actually, for whatever reason, can't set this style on a div...
+       => using inline style */
+    .label: {
+      color:  black;
+      font-weight: bold;
+    }
+
+    .scrollableTable {
+      height: 300px;
+      overflow: auto;
+      border-style: solid;
+      border-width: 1px;
+      border-color: grey;
+      padding: 5px;
+    }
+
+    .subDiv {
+      margin-left: 10px;
+    }
+
+    .infoDetail {
+      font-style: italic;
+      font-size: smaller;
+    }
+
+    .link {
+      --nuxeo-link_-_color: darkblue;
+    }
+
+    .nodes {
+      margin-left: 25px;
+      margin-top: 10px;
+      margin-right: 25px;
+    }
+
+    td, th {
+      border: 1px solid rgb(190, 190, 190);
+      padding: 3px 10px;
+    }
+
+    th {
+      /*background-color: #696969;
+      color: white;*/
+      text-align: center;
+    }
+
+    td {
+      margin-left: 10px;
+      height: 10px;
+    }
+
+    table {
+      border-collapse: collapse;
+      border: 2px solid rgb(200, 200, 200);
+      /*letter-spacing: 1px;
+      font-family: sans-serif;
+      font-size: 0.8rem;*/
+    }
+
+    .center {
+      text-align: center
+    }
+
+    .withMarginTop {
+      margin-top: 15px;
+    }
+    </style>
+
+    <iron-ajax id="callAjax"
+               url="/nuxeo/api/v1/management/stream/scale"
+               method="GET"
+               on-response="_getManagementResponse"
+               on-error="_ajaxCallFailure">
+    </iron-ajax>
+
+    <paper-button id="getStreamScaleButton"
+                  raised noink
+                  on-tap="_getStreamScale">
+      Scaling Analysis
+    </paper-button>
+
+    <!-- Display the result -->
+    <nuxeo-dialog id="resultDialog" with-backdrop>
+      <h3>Scaling Analysis</h3>
+      <div>(See the <a class="link" href="https://doc.nuxeo.com/rest-api/1/stream-endpoint/#get-scaling-analysis" target="_blank">documentation</a> for more details.)</div>
+
+      <nuxeo-card>
+        <div style="font-weight: bold">
+          Scale Summary<span class="subDiv" id="currNodesTip">ℹ️</span>
+        </div>
+        <paper-tooltip for="currNodesTip">
+          <div class="subDiv">
+            <p>Current Nodes: Number of worker nodes</p>
+            <p>Best Nodes: Best number of worker nodes to handle the load</p>
+            <p>Metric: Number of node(s) to add (> 0) or to remove (< 0). 0 should be the target for optimal processing.</p>
+          </div>
+        </paper-tooltip>
+        <div class="subDiv">
+          Current Nodes: [[streamScaleInfo.scale.currentNodes]]<br />
+          Best Nodes: [[streamScaleInfo.scale.bestNodes]]<br />
+          Metric: [[streamScaleInfo.scale.metric]]<br />
+        </div>
+
+        <hr class="withMarginTop">
+        <div class="withMarginTop" style="font-weight: bold">
+          Nodes, Computations and Raw JSON Data<span class="subDiv" id="computationsTip">ℹ️</span>
+        </div>
+        <paper-tooltip for="computationsTip">
+          <div class="subDiv">
+            <p>Nodes: The list of nodes information where computations are running</p>
+            <p>computations: List of active computations (with a lag), including all metrics per nodes and cumulated at cluster level, you can find an ETA (estimated time of completion in millisecond) with the current number of worker nodes and with the optimal number of nodes.</p>
+          </div>
+        </paper-tooltip>
+        <div class="scrollableTable withMarginTop">
+          <!-- Nodes -->
+          <span style="font-weight: bold">Nodes</span> (nodes information where computations are running)</span>
+          <div class="nodes">
+            <table>
+                <tr>
+                  <th>Hostname</th>
+                  <th>CPU Cores</th>
+                  <th>Creation Date</th>
+                  <th>Alive</th>
+                  <th>JVM Heap Size</th>
+                  <th>Type</th>
+                </tr>
+              <template is="dom-repeat" items="[[streamScaleInfo.nodes]]">
+                <tr>
+                  <td>[[item.hostname]]</td>
+                  <td class="center">[[item.cpuCores]]</td>
+                  <td class="center">[[_checkValue(item.created)]]</td>
+                  <td class="center">[[_checkValue(item.alive)]]</td>
+                  <td class="center">[[_formatBytes(item.jvmHeapSize)]]</td>
+                  <td class="center">[[_checkValue(item.type)]]</td>
+                </tr>
+              </template>
+            </table>
+          </div>
+
+          <!-- Computations -->
+          <div class="withMarginTop">
+            <span style="font-weight: bold">Computations</span> (List of active computations)</span>
+            <div class="nodes">
+              <table>
+                  <tr>
+                    <th>Computation</th>
+                    <th>Current</th>
+                    <th>Best</th>
+                  </tr>
+                <template is="dom-repeat" items="[[streamScaleInfo.computations]]">
+                  <tr>
+                    <td>[[item.computation]]</td>
+                    <td>
+                      Nodes: [[item.current.nodes]]<br />
+                      threads: [[item.current.threads]]<br />
+                      Rate 1mn: [[item.current.rate1m]] records/s<br />
+                      ETA: [[item.current.eta]]<br />
+                    </td>
+                    <td>
+                      Nodes: [[item.best.nodes]]<br />
+                      threads: [[item.best.threads]]<br />
+                      Rate 1mn: [[item.best.rate1m]]/s<br />
+                      ETA: [[item.best.eta]]<br />
+                    </td>
+                  </tr>
+                </template>
+              </table>
+            </div>
+          </div>
+
+          <!-- Raw Data -->
+          <hr class="withMarginTop">
+          <div>
+            <span style="font-weight: bold">Raw Data</span>
+            <paper-icon-button icon="icons:content-copy" on-tap="_copyToClipboard"></paper-icon-button>
+            <pre>[[jsonDataStr]]</pre>
+          </div>
+
+
+        </div> <!-- <div class="scrollableTable"> -->
+
+      </nuxeo-card>
+
+      <div class="buttons" style="float: right;">
+        <paper-button id="resultOkButton" dialog-dismiss class="primary" on-click="_resultDialogClosed">Ok</paper-button>
+      </div>
+    </nuxeo-dialog>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'admin-stream-scale',
+      behaviors: [Nuxeo.LayoutBehavior],
+      properties: {
+        streamScaleInfo: Object,
+        jsonDataStr: String
+      },
+
+      // Button is clicked
+      _getStreamScale: function() {
+        // Reset values
+        this._cleanUpResultDialogValues();
+
+        // Call Nuxeo
+        this.$.callAjax.generateRequest();
+      },
+
+      // Callback from iron-ajax with success
+      _getManagementResponse: function(evt, req) {
+
+        this._cleanUpResultDialogValues();
+        let streamScaleInfo = evt.detail.response;
+        
+        streamScaleInfo.nodes = [];
+        /*
+        for(let i = 0; i < 10; i++) {
+          streamScaleInfo.nodes.push({
+            hostname: "aaa",
+            cpuCores: "aaa",
+            created: "aaa",
+            alive: "aaa",
+            jvmHeapSize: 4*1024*1024*1024,
+            type: "aaa"
+          });
+        }
+        streamScaleInfo.computations = [];
+        for(let i = 0; i < 15; i++) {
+          streamScaleInfo.computations.push({
+            "computation": "computation-" + i,
+            "current": {
+                "nodes": 1,
+                "threads": 4,
+                "rate1m": i*100,
+                "eta": 25
+            },
+            "best": {
+                "nodes": 3,
+                "threads": 12,
+                "rate1m": 1313.498,
+                "eta": 8
+            }
+          });
+        }
+        */
+        this.streamScaleInfo = streamScaleInfo;
+        this.jsonDataStr = JSON.stringify(streamScaleInfo, null, 2);
+        
+        this.$.resultDialog.toggle();
+      },
+
+      // Ajax call failed
+      // Impossible to get the result dialog displayed, nor the page
+      // correctly refreshed. I believe the error occuring breaks
+      // and maybe bubbles something.
+      // => Simple alert, and then reload()
+      _ajaxCallFailure: function(evt, req) {
+        alert("An error occured when running <Get Nuxeo Distribution>:\n\n" + evt.detail.error.stack);
+        this._cleanUpResultDialogValues();
+        location.reload();
+      },
+
+      // Result dialogs handling
+      _cleanUpResultDialogValues: function() {
+        this.streamScaleInfo = {};
+      },
+
+      _resultDialogClosed: function() {
+        this._cleanUpResultDialogValues();
+      },
+
+      _checkValue: function(value) {
+        if(value) {
+          return value;
+        }
+        return "(N/A)";
+      },
+
+      _formatBytes: function(bytes,decimals) {
+         if(bytes == 0) return '0 Bytes';
+         var k = 1024,
+             dm = decimals || 2,
+             sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+             i = Math.floor(Math.log(bytes) / Math.log(k));
+         return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+      },
+
+      _copyToClipboard: function() {
+        navigator.clipboard.writeText(this.jsonDataStr);
+      }
+    });
+  </script>
+</dom-module>

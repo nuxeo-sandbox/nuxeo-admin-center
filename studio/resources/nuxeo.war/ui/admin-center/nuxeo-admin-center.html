@@ -9,6 +9,7 @@
 <link rel="import" href="admin-page-providers.html">
 <link rel="import" href="admin-gc-orphaned-versions.html">
 <link rel="import" href="admin-gc-workflows.html">
+<link rel="import" href="admin-stream-scale.html">
 
 <dom-module id="nuxeo-admin-center">
   <template>
@@ -151,6 +152,12 @@
                 <admin-gc-workflows></admin-gc-workflows>
                 <div class="actionInfo">
                   Garbage collect all the orphaned workflows (for which all associated documents have been removed) as well as workflows in state 'done' or 'canceled'.
+                </div>
+              </div>
+              <div class="action">
+                <admin-stream-scale class="actionButton"></admin-stream-scale>
+                <div class="actionButton actionInfo">
+                  <span class="moreInfo">Info about Streams and the auto-scaling options</span>
                 </div>
               </div>
             </div>

@@ -14,7 +14,7 @@
   <template>
     <style include="iron-flex iron-flex-alignment nuxeo-styles">
 
-    #_getManagementResponse {
+    #gcOrphanedWorkflowsButton {
       width:  var(--admin-button-width);
     }
 
@@ -39,7 +39,7 @@
                on-error="_ajaxCallFailure">
     </iron-ajax>
 
-    <paper-button id="gcOrphanedVersionsButton"
+    <paper-button id="gcOrphanedWorkflowsButton"
                   raised noink
                   on-tap="_gcOrphanedVersions">
       Garbage Collect Orphaned Versions
