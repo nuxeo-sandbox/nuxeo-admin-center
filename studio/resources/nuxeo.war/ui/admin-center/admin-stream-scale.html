@@ -116,7 +116,7 @@
           <div class="subDiv">
             <p>Current Nodes: Number of worker nodes</p>
             <p>Best Nodes: Best number of worker nodes to handle the load</p>
-            <p>Metric: Number of node(s) to add (> 0) or to remove (< 0). 0 should be the target for optimal processing.</p>
+            <p>Metric: Number of node(s) to add (&gt; 0) or to remove (&lt; 0). 0 should be the target for optimal processing.</p>
           </div>
         </paper-tooltip>
         <div class="subDiv">
@@ -131,14 +131,11 @@
         </div>
         <paper-tooltip for="computationsTip">
           <div class="subDiv">
-            <p style="margin: 0px;">
               Nodes:<br />
               <div class="subDiv">The list of nodes information where computations are running</div>
-            </p>
-            <p style="margin: 0px;">
+              <p></p>
               Computations:<br />
               <div class="subDiv">List of active computations (with a lag), including all metrics per nodes and cumulated at cluster level, you can find an ETA (estimated time of completion in milliseconds) with the current number of worker nodes and with the optimal number of nodes.</div>
-            </p>
           </div>
         </paper-tooltip>
         <div class="scrollableTable withMarginTop">
@@ -242,8 +239,8 @@
         this._cleanUpResultDialogValues();
         let streamScaleInfo = evt.detail.response;
         
+        /* For testing
         streamScaleInfo.nodes = [];
-        
         for(let i = 0; i < 10; i++) {
           streamScaleInfo.nodes.push({
             hostname: "aaa",
@@ -272,7 +269,7 @@
             }
           });
         }
-        
+        */
         this.streamScaleInfo = streamScaleInfo;
         this.jsonDataStr = JSON.stringify(streamScaleInfo, null, 2);
         
