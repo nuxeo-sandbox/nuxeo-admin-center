@@ -57,7 +57,7 @@
 
       // Button is clicked
       _gcOrphanedWorkflows: function() {
-        if(confirm("Garbage COllect the orphan worlflows?")) {
+        if(confirm("Garbage Collect the orphan worlflows?\n(This is an asynchronous process, a Bulk Action will be started.)")) {
           this.$.callAjax.generateRequest();
         }
         

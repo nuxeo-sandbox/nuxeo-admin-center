@@ -131,8 +131,14 @@
         </div>
         <paper-tooltip for="computationsTip">
           <div class="subDiv">
-            <p>Nodes: The list of nodes information where computations are running</p>
-            <p>computations: List of active computations (with a lag), including all metrics per nodes and cumulated at cluster level, you can find an ETA (estimated time of completion in millisecond) with the current number of worker nodes and with the optimal number of nodes.</p>
+            <p style="margin: 0px;">
+              Nodes:<br />
+              <div class="subDiv">The list of nodes information where computations are running</div>
+            </p>
+            <p style="margin: 0px;">
+              Computations:<br />
+              <div class="subDiv">List of active computations (with a lag), including all metrics per nodes and cumulated at cluster level, you can find an ETA (estimated time of completion in milliseconds) with the current number of worker nodes and with the optimal number of nodes.</div>
+            </p>
           </div>
         </paper-tooltip>
         <div class="scrollableTable withMarginTop">
@@ -237,7 +243,7 @@
         let streamScaleInfo = evt.detail.response;
         
         streamScaleInfo.nodes = [];
-        /*
+        
         for(let i = 0; i < 10; i++) {
           streamScaleInfo.nodes.push({
             hostname: "aaa",
@@ -266,7 +272,7 @@
             }
           });
         }
-        */
+        
         this.streamScaleInfo = streamScaleInfo;
         this.jsonDataStr = JSON.stringify(streamScaleInfo, null, 2);
         
