@@ -67,16 +67,25 @@
     .link {
       --nuxeo-link_-_color: darkblue;
     }
+
+    .mainWarning {
+      margin-left:25px;
+      padding-top: : 10px;
+      padding-bottom: : 10px;
+      padding-left: 15px;
+      padding-right: 15px;
+      background-color: lightyellow;
+    }
     </style>
 
     <nuxeo-page>
 
       <div slot="header">
         <h3>Admin Center</h3>
+        <span class="mainWarning">Warning: In a Nuxeo cluster environment, some of the information displayed here apply only to the node you are connected to.</span>
       </div>
 
       <div class="content">
-
         <div class="layout horizontal">
 
           <admin-status heading="Status" class="card"></admin-status>
@@ -86,7 +95,7 @@
               <div class="action firstAction">
                 <admin-nuxeo-distribution></admin-nuxeo-distribution>
                 <div class="actionInfo">
-                  Display information about current distribution (version, bundles)
+                  Display information about Nuxeo Server (version, environment, bundles, …)
                 </div>
               </div>
               <div class="action">
