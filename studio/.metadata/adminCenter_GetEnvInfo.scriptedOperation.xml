@@ -16,7 +16,7 @@ function run(input, params) {
       &quot;jvm&quot;: System.getProperty(&quot;java.runtime.name&quot;) + &quot; &quot; + System.getProperty(&quot;java.runtime.version&quot;),
       &quot;jvmBuild&quot;: System.getProperty(&quot;java.vm.version&quot;) + &quot; (&quot; + System.getProperty(&quot;java.vendor&quot;) + &quot;)&quot;,
       
-      &quot;platformLanguage&quot;: System.getProperty(&quot;user.language&quot;) + &quot; ()&quot; + System.getenv(&quot;LANG&quot;) + &quot;)&quot;,
+      &quot;platformLanguage&quot;: System.getProperty(&quot;user.language&quot;) + &quot; (&quot; + System.getenv(&quot;LANG&quot;) + &quot;)&quot;,
       
       &quot;memHeap&quot;: formatSize(Runtime.totalMemory()),
       &quot;memFree&quot;: formatSize(Runtime.freeMemory()),
