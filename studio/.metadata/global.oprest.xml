@@ -1,0 +1,20 @@
+<rest-bindings id="global" version="1.2">
+  <rules>
+    <binding-rule>
+      <name>javascript.adminCenter_GetEnvInfo</name>
+      <isChain>false</isChain>
+      <label>javascript.adminCenter_GetEnvInfo</label>
+      <isDisabled>false</isDisabled>
+      <isAdministrator>true</isAdministrator>
+      <https>false</https>
+    </binding-rule>
+    <binding-rule>
+      <name>javascript.adminCenter_downloadServerLog</name>
+      <isChain>false</isChain>
+      <label>javascript.adminCenter_downloadServerLog</label>
+      <isDisabled>false</isDisabled>
+      <isAdministrator>true</isAdministrator>
+      <https>false</https>
+    </binding-rule>
+  </rules>
+</rest-bindings>
