@@ -88,19 +88,7 @@
       <div class="content">
         <div class="layout horizontal">
 
-          <div class="layout vertical">
-            <admin-status heading="Status" class="card"></admin-status>
-
-            <nuxeo-card heading="server.log" class="card">
-              <nuxeo-operation-button icon="icons:arrow-downward"
-                                      label="Download"
-                                      tooltip="Download server.log"
-                                      show-label="true"
-                                      operation="javascript.adminCenter_downloadServerLog"
-                                      download="true" async="true">
-              </nuxeo-operation-button>
-            </nuxeo-card>
-          </div>
+          <admin-status heading="Status" class="card"></admin-status>
 
           <nuxeo-card heading="Actions" class="card">
             <div class="layout horizontal flex">
@@ -113,7 +101,8 @@
               <div class="action">
                 <admin-orphaned-binaries class="actionButton"></admin-orphaned-binaries>
                 <div class="actionButton actionInfo">
-                  Search and delete binaries not linked to any document. This action frees storage space.
+                  Search and delete binaries not linked to any document. This action frees storage space.<br/>
+                  (Available for Nuxeo LTS >= 2021.38 under some conditions, see <a class="link" target="_blank" href="https://doc.nuxeo.com/rest-api/1/blobs-endpoint/#status-codes">this documentation</a>)
                 </div>
               </div>
               <div class="action">

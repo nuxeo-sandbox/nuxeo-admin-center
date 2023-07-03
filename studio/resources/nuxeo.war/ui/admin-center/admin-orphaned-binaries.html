@@ -50,8 +50,15 @@
     </style>
 
     <iron-ajax id="callAjax"
-               url="/nuxeo/api/v1/management/binaries/orphaned"
+               url="/nuxeo/api/v1/management/blobs/orphaned"
                method="DELETE"
+               on-response="_ajaxCallSuccess"
+               on-error="_ajaxCallFailure">
+    </iron-ajax>
+
+    <iron-ajax id="getBulkStatus"
+               url="/nuxeo/api/v1/management/bulk/[[bulkStatus.commandId]]"
+               method="GET"
                on-response="_ajaxCallSuccess"
                on-error="_ajaxCallFailure">
     </iron-ajax>
@@ -64,7 +71,7 @@
 
     <nuxeo-admin-confirm id="adminConfirmDialog"
                          confirm-prompt="Delete the orphaned binaries?"
-                         confirm-info="This is a synchronous call, it can take time if there are a lot of orphaned binaries: Be patient (and monitor server.log for errors).<br /><br />ℹ️ <span style='font-size: smaller'>Also, notice that since LTS 2021.35, cleaning of binaries is automatic when storage is MongoDB (so, deleting a document automatically deletes its binaries if no other document is linked to them), ecm:blobKeys capability is turned on, etc.: See NXP-31594.<br />If your data was first deployed in this context, the feature will find no orphaned binaries and this is normal.</span>"
+                         confirm-info="This is an asynchronous call, using the Bulk Action Framework. It can take time if there are a lot of orphaned binaries: Be patient (and monitor server.log for errors).<br /><br />ℹ️ <span style='font-size: smaller'>Also, notice that since LTS 2021.35, cleaning of binaries is automatic when storage is MongoDB (so, deleting a document automatically deletes its binaries if no other document is linked to them), ecm:blobKeys capability is turned on, etc.: See NXP-31594.<br />If your data was first deployed in this context, the feature will find no orphaned binaries and this is normal.</span>"
                          confirm-ok-label="Delete"></nuxeo-admin-confirm>
 
     <!-- Display the result -->
@@ -83,20 +90,20 @@
         </div>
 
         <div id="resultDetails" class="resultDisabled">
-          <span style="font-weight: bold;">Duration</span>: [[deleteOrphanedBinariesResult.duration]]
+          <span style="font-weight: bold;">Duration</span>: [[gcBinariesResult.duration]]
 
-          <h5 class="resultSubTitle">Active Binaries</h5>
+          <h5 class="resultSubTitle">Processed Binaries</h5>
           <div class="resultSubValues">
-            <span class="label">Number</span>: [[deleteOrphanedBinariesResult.activeBinaries.number]]
+            <span class="label">Number</span>: [[gcBinariesResult.processed]]
             <br/>
-            <span class="label">Size</span>: [[deleteOrphanedBinariesResult.activeBinaries.size]]
+            <span class="label">Size</span>: [[gcBinariesResult.processedSize]]
           </div>
 
           <h5 class="resultSubTitle">Deleted Orphaned Binaries</h5>
           <div class="resultSubValues">
-            <span class="label">Number</span>: [[deleteOrphanedBinariesResult.deletedBinaries.number]]
+            <span class="label">Number</span>: [[gcBinariesResult.garbageCollected]]
             <br/>
-            <span class="label">Size</span>: [[deleteOrphanedBinariesResult.deletedBinaries.size]]
+            <span class="label">Size</span>: [[gcBinariesResult.garbageCollectedSize]]
           </div>
         </div>
       </nuxeo-card>
@@ -125,10 +132,15 @@
           type: String,
           value: "Processing the request..."
         },
-        deleteOrphanedBinariesResult: Object,
+        gcBinariesResult: Object,
         resultClass: {
           type: String,
           value: "resultDisabled"
+        },
+
+        bulkStatus: {
+          type: Object,
+          listener: "_bulkStatusChanged"
         }
       },
 
@@ -147,16 +159,12 @@
       // Set up the ui (progress, etc.) and call Nuxeo
       _confirmDialogOk: function() {
         // Reset values
-        this.deleteOrphanedBinariesResult = {
+        this.gcBinariesResult = {
           "duration": "...",
-          "activeBinaries": {
-            "number": "...",
-            "size": "..."
-          },
-          "deletedBinaries": {
-            "number": "...",
-            "size": "..."
-          },
+          "processed": "...",
+          "processedSize": "...",
+          "garbageCollected": "...",
+          "garbageCollectedSize": "..."
         }
 
         // Show progress
@@ -177,21 +185,46 @@
         // Nothing
       },
 
-      // Display the final response: Update the UI
-      _deleteOrphanedBinariesResponse: function(evt, req) {
-        let result = "";
-        let resultJson = evt.detail.response;
+      _bulkStatusChanged: function(newStatus) {
 
-        this.deleteOrphanedBinariesResult = {
-          "duration": resultJson.gcDuration.toLocaleString() + "ms",
-          "activeBinaries": {
-            "number": resultJson.numBinaries.toLocaleString(),
-            "size": this._formatBytes(resultJson.sizeBinaries)
-          },
-          "deletedBinaries": {
-            "number": resultJson.numBinariesGC.toLocaleString(),
-            "size": this._formatBytes(resultJson.sizeBinariesGC)
-          }
+        let getStatus = true;
+
+        Console.log("GC Orphaned Binaries, bulk status: " + newStatus.state);
+        switch (newStatus.state) {
+        case "SCHEDULED":
+          // Let's wait a bit then check the status
+
+          break;
+
+        case "COMPLETED":
+          this._deleteOrphanedBinariesResponse(newStatus);
+          getStatus = false;
+          break;
+
+        default:
+          Console.log("Unexpected staus. Still fetching.");
+          break;
+
+        }
+
+        if(getStatus) {
+          // Wait 3 seconds
+          setTimeout(function() {
+              this.$.getBulkStatus.generateRequest();
+            }.bind(this), 3000);
+        }
+      },
+
+      // Display the final response: Update the UI
+      _deleteOrphanedBinariesResponse: function(bulkStatus) {
+        let result = "";
+
+        this.gcBinariesResult = {
+          "duration": bulkStatus.processingMillis + "ms",
+          "processed": bulkStatus.processed,
+          "processedSize": this._formatBytes(bulkStatus.totalSize),
+          "garbageCollected": bulkStatus.processed - bulkStatus.skipCount,
+          "garbageCollectedSize": this._formatBytes(bulkStatus.result.deletedSize)
         };
 
         this.$.resultDetails.className="resultEnabled"
@@ -216,24 +249,17 @@
       },
 
       // Success
-      // When the call is succesful, but too fast, we let the progress a little bit
+      // Notice this is called for both launching the command, then checking its status.
       _ajaxCallSuccess: function(evt, req) {
-
-        let reminder = 3000 - (Date.now() - this.progressTimer);
-        if(reminder > 500) {
-          setTimeout(function() {
-            this._deleteOrphanedBinariesResponse(evt, req);
-          }.bind(this), reminder);
-        } else {
-          this._deleteOrphanedBinariesResponse(evt, req);
-        }
+        // the observer on bulkStatus handles everything.
+        this.bulkStatus = evt.detail.response;
       },
 
       // ====================================
       // Result dialogs handling
       // ====================================
       _cleanUpResultDialogValues: function() {
-        this.deleteOrphanedBinariesResult = null;
+        this.gcBinariesResult = null;
         this.displayProgressStyle = "none";
         this.progressTimer =  Date.now();
         this.processingInfo = "Processing request...";
