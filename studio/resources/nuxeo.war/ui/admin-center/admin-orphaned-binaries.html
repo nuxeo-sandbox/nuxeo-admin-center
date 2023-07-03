@@ -63,6 +63,13 @@
                on-error="_ajaxCallFailure">
     </iron-ajax>
 
+    <iron-ajax id="callBinariesEndpoint"
+               url="/nuxeo/api/v1/management/binaries/orphaned"
+               method="DELETE"
+               on-response="_ajaxBinariesEndpointSuccess"
+               on-error="_ajaxCallFailure">
+    </iron-ajax>
+
     <paper-button id="deleteOrphanedBinariesButton"
                   raised noink
                   on-tap="_deleteOrphanedBinaries">
@@ -71,7 +78,9 @@
 
     <nuxeo-admin-confirm id="adminConfirmDialog"
                          confirm-prompt="Delete the orphaned binaries?"
-                         confirm-info="This is an asynchronous call, using the Bulk Action Framework. It can take time if there are a lot of orphaned binaries: Be patient (and monitor server.log for errors).<br /><br />ℹ️ <span style='font-size: smaller'>Also, notice that since LTS 2021.35, cleaning of binaries is automatic when storage is MongoDB (so, deleting a document automatically deletes its binaries if no other document is linked to them), ecm:blobKeys capability is turned on, etc.: See NXP-31594.<br />If your data was first deployed in this context, the feature will find no orphaned binaries and this is normal.</span>"
+                         confirm-info="This is an asynchronous call, using the Bulk Action Framework. It can take time if there are a lot of orphaned binaries: Be patient (and monitor server.log for errors).<br /><br />
+                         ⚠️ <span>If your repository is not compatible with the required conditions (ecm:blobKeys, etc.) ⚠️<br />Cancel this dialog then alt-click the 'Delete Orphaned Binaries' button. This will trigger the previous, synchronous endpoint (see https://doc.nuxeo.com/rest-api/1/binaries-endpoint/)</nuxeo-admin-confirm></span>
+                         <br /><br />ℹ️ <span style='font-size: smaller'>Also, notice that since LTS 2021.35, cleaning of binaries is automatic when storage is MongoDB (so, deleting a document automatically deletes its binaries if no other document is linked to them), ecm:blobKeys capability is turned on, etc.: See NXP-31594.<br />If your data was first deployed in this context, the feature will find no orphaned binaries and this is normal.</span>"
                          confirm-ok-label="Delete"></nuxeo-admin-confirm>
 
     <!-- Display the result -->
@@ -141,6 +150,11 @@
         bulkStatus: {
           type: Object,
           listener: "_bulkStatusChanged"
+        },
+
+        useBinariesEndPoint: {
+          type: Boolean,
+          value: false
         }
       },
 
@@ -151,8 +165,16 @@
       },
 
       // Button is clicked
-      _deleteOrphanedBinaries: function() {
-        this.$.adminConfirmDialog.toggle();
+      _deleteOrphanedBinaries: function(evt) {
+        if(evt.detail.sourceEvent.altKey) {
+          if(confirm("Delete orphaned binaries using the /binaries endpoint?")) {
+            this.useBinariesEndPoint = true;
+            this._confirmDialogOk();
+          }
+        } else {
+          this.useBinariesEndPoint = false;
+          this.$.adminConfirmDialog.toggle();
+        }
       },
 
       // nuxeo-admin-confirm dialog OK button clicked
@@ -178,7 +200,11 @@
         this.$.resultDialog.toggle();
 
         // Call Nuxeo
-        this.$.callAjax.generateRequest();
+        if(this.useBinariesEndPoint) {
+          this.$.callBinariesEndpoint.generateRequest();
+        } else {
+          this.$.callAjax.generateRequest();
+        }
       },
 
       _confirmDialogCancel: function() {
@@ -235,7 +261,7 @@
       },
 
       // ====================================
-      // Success/Failure of the ajax call
+      // Success/Failure of the ajax calls
       // ====================================
       // Failure
       // Impossible to get the result dialog displayed, nor the page
@@ -253,6 +279,36 @@
       _ajaxCallSuccess: function(evt, req) {
         // the observer on bulkStatus handles everything.
         this.bulkStatus = evt.detail.response;
+      },
+
+      _ajaxBinariesEndpointSuccess: function(evt, req) {
+        let reminder = 3000 - (Date.now() - this.progressTimer);
+        if(reminder > 500) {
+          setTimeout(function() {
+            this._binariesEndPointResponse(evt, req);
+          }.bind(this), reminder);
+        } else {
+          this._binariesEndPointResponse(evt, req);
+        }
+      },
+
+      _binariesEndPointResponse: function(evt, req) {
+        let result = "";
+        let resultJson = evt.detail.response;
+
+        this.gcBinariesResult = {
+          "duration": resultJson.gcDuration.toLocaleString() + "ms",
+          "processed": resultJson.numBinaries.toLocaleString(),
+          "processedSize": this._formatBytes(resultJson.sizeBinaries),
+          "garbageCollected": resultJson.numBinariesGC.toLocaleString(),
+          "garbageCollectedSize": this._formatBytes(resultJson.sizeBinariesGC)
+        };
+
+        this.$.resultDetails.className="resultEnabled"
+        this.$.resultOkButton.disabled = false;
+        this.$.progress.disabled = true;
+        this.processingInfo = "Processing done";
+
       },
 
       // ====================================
