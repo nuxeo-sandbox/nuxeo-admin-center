@@ -7,6 +7,8 @@
     &lt;allow&gt;java.lang.Runtime&lt;/allow&gt;
     &lt;allow&gt;java.lang.management.ManagementFactory&lt;/allow&gt;
     &lt;allow&gt;org.nuxeo.ecm.core.api.repository.RepositoryManager&lt;/allow&gt;
+    &lt;allow&gt;java.io.File&lt;/allow&gt;
+    &lt;allow&gt;org.nuxeo.ecm.core.api.impl.blob.FileBlob&lt;/allow&gt;
   &lt;/classFilter&gt;
 &lt;/extension&gt;</xml>
 </xml-extension>

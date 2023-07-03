@@ -1,9 +1,9 @@
 <application>
   <targetPlatform>
-    <version>lts-2023.0</version>
+    <version>lts-2021.0</version>
     <packages/>
   </targetPlatform>
   <dependencies class="linked-hash-set">
-    <string>nuxeo-web-ui:3.1.1</string>
+    <string>nuxeo-web-ui:3.0.24</string>
   </dependencies>
 </application>

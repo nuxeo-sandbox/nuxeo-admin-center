@@ -1,0 +1,30 @@
+<scriptedOperation id="adminCenter_downloadServerLog" version="1.2">
+  <script>/* Using Java in JS to get the log via a Java File*/
+function run(input, params) {
+  
+  var logPath, logFile, logBlob, zip;
+  
+  logPath = org.nuxeo.runtime.api.Framework.getProperty(/*Environment.NUXEO_LOG_DIR*/&quot;nuxeo.log.dir&quot;);
+  if(logPath.charAt(logPath.length - 1) !== &quot;/&quot;) {
+    logPath += &quot;/&quot;;
+  }
+  logPath += &quot;server.log&quot;;
+  
+  logFile = new java.io.File(logPath);
+  logBlob = new org.nuxeo.ecm.core.api.impl.blob.FileBlob(logFile);
+  (new Date()).toISOString().replace(/:/g, &quot;-&quot;);
+  zip = Blob.CreateZip(
+    logBlob, {
+	&apos;filename&apos;: (new Date()).toISOString().replace(/:/g, &quot;-&quot;) + &quot;-server.log.zip&quot;
+    }
+  );
+  
+  return zip;
+
+}</script>
+  <description></description>
+  <inputType>void</inputType>
+  <outputType>blob</outputType>
+  <category>javascript</category>
+  <disableHelperComments>true</disableHelperComments>
+</scriptedOperation>
