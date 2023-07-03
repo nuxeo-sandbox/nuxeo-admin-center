@@ -88,7 +88,19 @@
       <div class="content">
         <div class="layout horizontal">
 
-          <admin-status heading="Status" class="card"></admin-status>
+          <div class="layout vertical">
+            <admin-status heading="Status" class="card"></admin-status>
+
+            <nuxeo-card heading="server.log" class="card">
+              <nuxeo-operation-button icon="icons:arrow-downward"
+                                      label="Download"
+                                      tooltip="Download server.log"
+                                      show-label="true"
+                                      operation="javascript.adminCenter_downloadServerLog"
+                                      download="true" async="true">
+              </nuxeo-operation-button>
+            </nuxeo-card>
+          </div>
 
           <nuxeo-card heading="Actions" class="card">
             <div class="layout horizontal flex">
