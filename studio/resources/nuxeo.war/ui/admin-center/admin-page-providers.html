@@ -58,7 +58,7 @@
             <table style="height: 300px">
                 <template is="dom-repeat" items="[[pageProviders]]">
                   <tr>
-                    <td width="33%">[[item.name]]</td>
+                    <td width="33%" style="font-size:[[item.fontSize]]">[[item.name]]</td>
                     <td style="color:[[item.color]]">[[item.class]]</td>
                   </tr>
                 </template>
@@ -136,6 +136,11 @@
               el.color = "#0aca00";
             }
 
+          }
+
+          el.fontSize = "inherit";
+          if(el.name === el.name.toUpperCase()) {
+            el.fontSize = "smaller"
           }
 
           return el;
