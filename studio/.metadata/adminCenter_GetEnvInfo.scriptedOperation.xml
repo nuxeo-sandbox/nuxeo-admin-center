@@ -1,5 +1,5 @@
 <scriptedOperation id="adminCenter_GetEnvInfo" version="1.2">
-  <script>/* Using &quot;Java in JavaScript&quot; to avoid depending on a plugin for just fetching environment info
+  <script>/* Using &quot;Java in JavaScript&quot; to avoid depending on a plugin for just fetching environment info.
    This code is basically the same as what the old JSF Admin Center was doing.
 */
 function run(input, params) {
