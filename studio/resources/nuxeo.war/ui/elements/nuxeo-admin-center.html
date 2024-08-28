@@ -1,202 +1,88 @@
-<link rel="import" href="admin-orphaned-binaries.html">
-<link rel="import" href="admin-nuxeo-distribution.html">
-<link rel="import" href="admin-nuxeo-probes.html">
-<link rel="import" href="admin-status.html">
-<link rel="import" href="admin-reindex-repository.html">
-<link rel="import" href="admin-recompute-views.html">
-<link rel="import" href="admin-recompute-thumbnails.html">
-<link rel="import" href="admin-recompute-videos.html">
-<link rel="import" href="admin-page-providers.html">
-<link rel="import" href="admin-gc-orphaned-versions.html">
-<link rel="import" href="admin-gc-workflows.html">
-<link rel="import" href="admin-stream-scale.html">
-
 <dom-module id="nuxeo-admin-center">
   <template>
     <style include="iron-flex iron-flex-alignment nuxeo-styles">
+      /* For display cards side-by-side */
+      .right {
+        margin-left: 16px;
+      }
 
-    /* Used by all sub-elements for a fixed width of every button*/
-    :host {
-      --admin-button-width:  300px;
-    }
+      /* For icons that appear inline with text. */
+      .small-icon {
+        --iron-icon-height: 1rem;
+        --iron-icon-width: 1rem;
+      }
 
-    .action {
-      padding-right: 20px;
-      padding-left: 20px;
-      padding-bottom: 10px;
-      padding-top: 10px;
-      box-shadow: 0 1px 1px lightgrey;
-      margin:  0 10px;
-    }
-
-    .action .firstAction {
-      padding-left: 0;
-    }
-
-    .actionInfo {
-      max-width: var(--admin-button-width);
-      margin-top:  10px;
-      font-size: smaller;
-    }
-
-    .actionInfo .moreInfo {
-      font-size: x-small;
-      font-style: italic;
-    }
-
-    .actionButton {
-      margin-left:  25px;
-    }
-
-    .content {
-      background-color: white;
-    }
-
-    .withMarginLeft {
-      margin-left: 20px;
-    }
-
-    .card {
-      margin:  20px;
-    }
-
-    .moreSpaceAbove {
-      margin-top:  20px;
-    }
-
-    .link {
-      --nuxeo-link_-_color: darkblue;
-    }
-
-    .mainWarning {
-      margin-left:25px;
-      padding-top: : 10px;
-      padding-bottom: : 10px;
-      padding-left: 15px;
-      padding-right: 15px;
-      background-color: lightyellow;
-    }
+      .warning {
+        color: orange;
+      }
     </style>
 
     <nuxeo-page>
 
       <div slot="header">
-        <h3>Admin Center</h3>
-        <span class="mainWarning">Warning: In a Nuxeo cluster environment, some of the information displayed here apply only to the node you are connected to.</span>
+        <div>[[i18n('nxpac.label.admin-center-page-header')]]</div>
       </div>
 
       <div class="content">
-        <div class="layout horizontal">
 
-          <div class="layout vertical">
-            <admin-status heading="Status" class="card"></admin-status>
+        <!-- First row -->
+        <div class="layout flex horizontal">
+          <!--== About ========================================================-->
+          <nuxeo-card heading="Admin Center Info"
+                      class="layout flex"
+                      collapsible>
 
-            <nuxeo-card heading="server.log" class="card">
-              <nuxeo-operation-button icon="icons:arrow-downward"
-                                      label="Download"
-                                      tooltip="Download server.log"
-                                      show-label="true"
-                                      operation="javascript.adminCenter_downloadServerLog"
-                                      download="true" async="true">
-              </nuxeo-operation-button>
-            </nuxeo-card>
-          </div>
+            <paper-icon-item>
+              <iron-icon icon="icons:info"
+                         slot="item-icon">
+              </iron-icon>
+              <div>This interface was created to replace <a href="https://doc.nuxeo.com/n/9CF"
+                   target="_blank">Nuxeo JSF UI Admin features<iron-icon class="small-icon"
+                             icon="icons:open-in-new"></iron-icon></a>.</div>
+            </paper-icon-item>
 
-          <nuxeo-card heading="Actions" class="card">
-            <div class="layout horizontal flex">
-              <div class="action firstAction">
-                <admin-nuxeo-distribution></admin-nuxeo-distribution>
-                <div class="actionInfo">
-                  Display information about Nuxeo Server (version, environment, bundles, …)
-                </div>
-              </div>
-              <div class="action">
-                <admin-orphaned-binaries class="actionButton"></admin-orphaned-binaries>
-                <div class="actionButton actionInfo">
-                  Search and delete binaries not linked to any document. This action frees storage space.<br/>
-                  (Available for Nuxeo LTS >= 2021.38 under some conditions, see <a class="link" target="_blank" href="https://doc.nuxeo.com/rest-api/1/blobs-endpoint/#status-codes">this documentation</a>)
-                </div>
-              </div>
-              <div class="action">
-                <admin-nuxeo-probes class="actionButton"></admin-nuxeo-probes>
-                <div class="actionButton actionInfo">
-                  Display information about misc. probes
-                </div>
-              </div>
-            </div>
+            <paper-icon-item>
+              <iron-icon icon="icons:info"
+                         slot="item-icon">
+              </iron-icon>
+              <div>Note: use the <a href="https://doc.nuxeo.com/n/9CF"
+                   target="_blank">Nuxeo Dev Tools Extension<iron-icon class="small-icon"
+                             icon="icons:open-in-new"></iron-icon></a> to
+                handle dev tasks (hot reload, reindex,
+                restart).</div>
+            </paper-icon-item>
 
-            <div class="layout horizontal flex moreSpaceAbove">
-              <div class="action firstAction">
-                <admin-recompute-views></admin-recompute-views>
-                <div class="actionInfo">
-                  Recompute the <code>picture:view</code> field for all the documents returned by a NXQL query. Default query searches for all documents with the <code>Picture</code> facet not having a rendition.
-                </div>
-              </div>
-              <div class="action">
-                <admin-recompute-thumbnails class="actionButton"></admin-recompute-thumbnails>
-                <div class="actionButton actionInfo">
-                  Recompute the thumbnails for all the documents found by a NXQL query. Default query searches for all documents with the <code>Thumbnail</code> facet and no thumbnail.
-                </div>
-              </div>
-              <div class="action">
-                <admin-recompute-videos class="actionButton"></admin-recompute-videos>
-                <div class="actionButton actionInfo">
-                  Recompute renditions (all or only some) for all the documents found by a NXQL query. Default query searches for all documents with the <code>Video</code> facet and no renditions. Can optionnaly also recompute the video info.
-                </div>
-              </div>
-            </div>
+            <paper-icon-item>
+              <iron-icon icon="icons:info"
+                         slot="item-icon">
+              </iron-icon>
+              <div>Refer to the <a href="https://doc.nuxeo.com/n/WLK"
+                   target="_blank">Management Endpoint documentation<iron-icon class="small-icon"
+                             icon="icons:open-in-new"></iron-icon></a> for more details.</div>
+            </paper-icon-item>
 
-            <div class="layout horizontal flex moreSpaceAbove">
-              <div class="action firstAction">
-                <admin-reindex-repository></admin-reindex-repository>
-                <div class="actionInfo">
-                  Re-index the whole repository (Elasticsearch index)
-                </div>
-              </div>
-              <div class="action">
-                <admin-page-providers class="actionButton"></admin-page-providers>
-                <div class="actionButton actionInfo">
-                  Display the page providers deployed (name and class)<br/>
-                  <span class="moreInfo">(Available for Nuxeo LTS >= 2021.34)</span>
-                </div>
-              </div>
-              <div class="action">
-                <admin-gc-orphaned-versions class="actionButton"></admin-gc-orphaned-versions>
-                <div class="actionButton actionInfo">
-                  <span class="moreInfo">(Available for Nuxeo LTS >= 2021.31)</span>
-                </div>
-              </div>
-            </div>
+            <paper-icon-item>
+              <iron-icon icon="icons:warning"
+                         slot="item-icon"
+                         class="warning"></iron-icon>
+              <div>In a Nuxeo cluster environment, some of the information displayed here
+                applies only to the node you are connected to.</div>
+            </paper-icon-item>
+          </nuxeo-card>
 
-
-            <div class="layout horizontal flex moreSpaceAbove">
-              <div class="action firstAction">
-                <admin-gc-workflows></admin-gc-workflows>
-                <div class="actionInfo">
-                  Garbage collect all the orphaned workflows (for which all associated documents have been removed) as well as workflows in state 'done' or 'canceled'.
-                </div>
-              </div>
-              <div class="action">
-                <admin-stream-scale class="actionButton"></admin-stream-scale>
-                <div class="actionButton actionInfo">
-                  <span class="moreInfo">Info about Streams and the auto-scaling options</span>
-                </div>
-              </div>
-            </div>
+          <!--== Health Check ===============================================-->
+          <nuxeo-card heading="Nuxeo Server Health Check"
+                      class="right"
+                      collapsible>
+            <nxpac-health-check></nxpac-health-check>
           </nuxeo-card>
         </div>
 
-        <nuxeo-card>
-          <div class="layout vertical">
-            ℹ️ The following actions are to be done from the Nuxeo Developer Extension:
-            <ul>
-              <li>Re-index Elasticsearch for a NXQL query</li>
-              <li>Restart Server</li>
-            </ul>
-          </div>
-            Also, please don't hesitate to read the <span class="link"><a href="https://doc.nuxeo.com/rest-api/1/management-endpoint/" target="_blank">Management Endpoint documentation</a></span> for details.
-        </nuxeo-card>
-        
+        <!--== Actions ======================================================-->
+        <nuxeo-slot slot="ADMIN_CENTER"
+                    model="[[mySlotModel]]">
+        </nuxeo-slot>
+
       </div>
 
     </nuxeo-page>

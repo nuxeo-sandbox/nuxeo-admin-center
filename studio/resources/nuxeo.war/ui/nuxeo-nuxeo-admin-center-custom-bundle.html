@@ -4,3 +4,117 @@ CUSTOM CODE SPACE
 ***
 Use this file to put any custom code you want to deploy on top of Studio's automatically generated configuration.
 -->
+<link rel="import"
+      href="elements/admin-orphaned-binaries.html">
+<link rel="import"
+      href="elements/admin-nuxeo-distribution.html">
+<link rel="import"
+      href="elements/admin-nuxeo-probes.html">
+<link rel="import"
+      href="elements/nxpac-health-check.html">
+<link rel="import"
+      href="elements/admin-reindex-repository.html">
+<link rel="import"
+      href="elements/admin-recompute-views.html">
+<link rel="import"
+      href="elements/admin-recompute-thumbnails.html">
+<link rel="import"
+      href="elements/admin-recompute-videos.html">
+<link rel="import"
+      href="elements/admin-page-providers.html">
+<link rel="import"
+      href="elements/admin-gc-orphaned-versions.html">
+<link rel="import"
+      href="elements/admin-gc-workflows.html">
+<link rel="import"
+      href="elements/admin-stream-scale.html">
+<link rel="import"
+      href="elements/nxpac-basic-action.html">
+<link rel="import"
+      href="elements/nxpac-nuxeo-operation-button.html">
+
+<!--== Server Log ===========================================-->
+<nuxeo-slot-content name="adminCenter_downloadServerLog"
+                    slot="ADMIN_CENTER">
+  <template>
+    <nxpac-basic-action label="Download Log"
+                     description="Download Nuxeo server.log. Uses a custom operation to fetch and zip the log."
+                     operation="javascript.adminCenter_downloadServerLog"
+                     download
+                     async>
+    </nxpac-basic-action>
+  </template>
+</nuxeo-slot-content>
+
+
+<!-- <admin-nuxeo-distribution></admin-nuxeo-distribution>
+<div class="actionInfo">
+  Display information about Nuxeo Server (version, environment, bundles, …)
+</div>
+
+<admin-orphaned-binaries class="actionButton"></admin-orphaned-binaries>
+<div class="actionButton actionInfo">
+  Search and delete binaries not linked to any document. This action frees storage space.<br />
+  (Available for Nuxeo LTS >= 2021.38 under some conditions, see <a class="link"
+     target="_blank"
+     href="https://doc.nuxeo.com/rest-api/1/blobs-endpoint/#status-codes">this documentation</a>)
+</div>
+
+
+<admin-nuxeo-probes class="actionButton"></admin-nuxeo-probes>
+<div class="actionButton actionInfo">
+  Display information about misc. probes
+</div>
+
+
+
+<admin-recompute-views></admin-recompute-views>
+<div class="actionInfo">
+  Recompute the <code>picture:view</code> field for all the documents returned by a NXQL query. Default
+  query searches for all documents with the <code>Picture</code> facet not having a rendition.
+</div>
+
+<admin-recompute-thumbnails class="actionButton"></admin-recompute-thumbnails>
+<div class="actionButton actionInfo">
+  Recompute the thumbnails for all the documents found by a NXQL query. Default query searches for all
+  documents with the <code>Thumbnail</code> facet and no thumbnail.
+</div>
+
+<admin-recompute-videos class="actionButton"></admin-recompute-videos>
+<div class="actionButton actionInfo">
+  Recompute renditions (all or only some) for all the documents found by a NXQL query. Default query
+  searches for all documents with the <code>Video</code> facet and no renditions. Can optionnaly also
+  recompute the video info.
+</div>
+
+
+<admin-reindex-repository></admin-reindex-repository>
+<div class="actionInfo">
+  Re-index the whole repository (Elasticsearch index)
+</div>
+
+<admin-page-providers class="actionButton"></admin-page-providers>
+<div class="actionButton actionInfo">
+  Display the page providers deployed (name and class)<br />
+  <span class="moreInfo">(Available for Nuxeo LTS >= 2021.34)</span>
+</div>
+
+<admin-gc-orphaned-versions class="actionButton"></admin-gc-orphaned-versions>
+<div class="actionButton actionInfo">
+  <span class="moreInfo">(Available for Nuxeo LTS >= 2021.31)</span>
+</div>
+
+
+
+
+
+<admin-gc-workflows></admin-gc-workflows>
+<div class="actionInfo">
+  Garbage collect all the orphaned workflows (for which all associated documents have been removed) as well
+  as workflows in state 'done' or 'canceled'.
+</div>
+
+<admin-stream-scale class="actionButton"></admin-stream-scale>
+<div class="actionButton actionInfo">
+  <span class="moreInfo">Info about Streams and the auto-scaling options</span>
+</div> -->

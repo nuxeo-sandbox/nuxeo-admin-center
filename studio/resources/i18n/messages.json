@@ -3,5 +3,7 @@
   "ldapDirectories": "LDAP Directories",
   "repository": "Repository",
   "runtime": "Runtime",
-  "stream": "Stream"
+  "stream": "Stream",
+  "nxpac.label.admin-center-page-header": "Admin Center",
+  "nxpac.label.message.healthcheckfailed": "Unable to call Health Check"
 }
