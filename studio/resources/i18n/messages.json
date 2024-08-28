@@ -1,0 +1,7 @@
+{
+	"elasticSearch": "Elasticsearch",
+  "ldapDirectories": "LDAP Directories",
+  "repository": "Repository",
+  "runtime": "Runtime",
+  "stream": "Stream"
+}
