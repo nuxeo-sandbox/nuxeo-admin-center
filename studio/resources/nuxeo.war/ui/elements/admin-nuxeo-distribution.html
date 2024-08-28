@@ -14,50 +14,49 @@
 <dom-module id="admin-nuxeo-distribution">
   <template>
     <style include="iron-flex iron-flex-alignment nuxeo-styles">
+      #getDistributionButton {
+        width: var(--admin-button-width);
+      }
 
-    #getDistributionButton {
-      width:  var(--admin-button-width);
-    }
+      nuxeo-dialog {
+        max-width: 700px;
+      }
 
-    nuxeo-dialog {
-      max-width: 700px;
-    }
-
-    /* Actually, for whatever reason, can't set this style on a div...
+      /* Actually, for whatever reason, can't set this style on a div...
        => using inline style */
-    .label: {
-      color:  black;
-      font-weight: bold;
-    }
+      .label: {
+        color: black;
+        font-weight: bold;
+      }
 
-    .scrollableTable {
-      height: 300px;
-      overflow: auto;
-      border-style: solid;
-      border-width: 1px;
-      border-color: grey;
-      padding: 5px;
-    }
+      .scrollableTable {
+        height: 300px;
+        overflow: auto;
+        border-style: solid;
+        border-width: 1px;
+        border-color: grey;
+        padding: 5px;
+      }
 
-    .scrollableTable td {
-      vertical-align: top;
-    }
+      .scrollableTable td {
+        vertical-align: top;
+      }
 
-    .subDiv {
-      margin-left: 15px;
-    }
+      .subDiv {
+        margin-left: 15px;
+      }
 
-    .envInfo {
-      border-style: solid;
-      border-width: 1px;
-      border-color: grey;
-      padding: 5px;
-    }
+      .envInfo {
+        border-style: solid;
+        border-width: 1px;
+        border-color: grey;
+        padding: 5px;
+      }
 
-    .envInfo td {
-      padding-right: 10px;
-      vertical-align: top;
-    }
+      .envInfo td {
+        padding-right: 10px;
+        vertical-align: top;
+      }
     </style>
 
     <iron-ajax id="callAjax"
@@ -73,31 +72,39 @@
                      on-response="_getEnvInfoResponse"></nuxeo-operation>
 
     <paper-button id="getDistributionButton"
-                  raised noink
+                  raised
+                  noink
                   on-tap="_getDistribution">
       Nuxeo Server Info
     </paper-button>
 
     <!-- Display the result -->
-    <nuxeo-dialog id="resultDialog" with-backdrop>
+    <nuxeo-dialog id="resultDialog"
+                  with-backdrop>
       <h3>Nuxeo Server Info</h3>
 
       <nuxeo-card>
-      <span style="font-style:italic">Important: In cluster mode, these information are about the node you are connected to.</span>
-      <p></p>
+        <span style="font-style:italic">Important: In cluster mode, these information are about the node you are
+          connected to.</span>
+        <p></p>
         <div role="widget">
           <div style="font-weight: bold">Nuxeo</div>
           <ul style="margin-top: 0">
-            <li>Version: [[distributionResult.applicationName]] [[distributionResult.applicationVersion]] (Distribution: [[distributionResult.distributionName]] [[distributionResult.distributionVersion]], date: [[distributionResult.distributionDate]])</li>
+            <li>Version: [[distributionResult.applicationName]] [[distributionResult.applicationVersion]] (Distribution:
+              [[distributionResult.distributionName]] [[distributionResult.distributionVersion]], date:
+              [[distributionResult.distributionDate]])</li>
             <li>[[_getClusterInfo(envInfo)]]</li>
             <li>Uptime: [[envInfo.uptime]]</li>
-            <template is="dom-if" if="[[_isSingleRepo(envInfo)]]">
+            <template is="dom-if"
+                      if="[[_isSingleRepo(envInfo)]]">
               <li>Repository: [[envInfo.repositories.defaultRepo]] (Single repository mode)</li>
             </template>
-            <template is="dom-if" if="[[!_isSingleRepo(envInfo)]]">
+            <template is="dom-if"
+                      if="[[!_isSingleRepo(envInfo)]]">
               <li>Repositories:
                 <ul>
-                  <template is="dom-repeat" items="[[envInfo.repositories.repositories]]">
+                  <template is="dom-repeat"
+                            items="[[envInfo.repositories.repositories]]">
                     <li>[[item]]</li>
                   </template>
                 </ul>
@@ -127,19 +134,24 @@
           <div style="font-weight: bold">Bundles</div>
           <div class="scrollableTable">
             <table style="height: 300px">
-                <template is="dom-repeat" items="[[distributionResult.bundles]]">
-                  <tr>
-                    <td width="70%">[[item.name]]</td>
-                    <td>[[item.version]]</td>
-                  </tr>
-                </template>
+              <template is="dom-repeat"
+                        items="[[distributionResult.bundles]]">
+                <tr>
+                  <td width="70%">[[item.name]]</td>
+                  <td>[[item.version]]</td>
+                </tr>
+              </template>
             </table>
           </div>
         </div>
       </nuxeo-card>
 
-      <div class="buttons" style="float: right;">
-        <paper-button id="resultOkButton" dialog-dismiss class="primary" on-click="_resultDialogClosed">Ok</paper-button>
+      <div class="buttons"
+           style="float: right;">
+        <paper-button id="resultOkButton"
+                      dialog-dismiss
+                      class="primary"
+                      on-click="_resultDialogClosed">Ok</paper-button>
       </div>
     </nuxeo-dialog>
 
@@ -155,7 +167,7 @@
       },
 
       // Button is clicked
-      _getDistribution: function() {
+      _getDistribution: function () {
         // Reset values
         this._cleanUpResultDialogValues();
 
@@ -164,7 +176,7 @@
       },
 
       // Callback from iron-ajax with success
-      _getDistributionResponse: function(evt, req) {
+      _getDistributionResponse: function (evt, req) {
 
         this._cleanUpResultDialogValues();
         this.distributionResult = evt.detail.response;
@@ -172,28 +184,28 @@
       },
 
       // Callback from nuxeo-operation
-      _getEnvInfoResponse: function(result) {
-        if(result.detail.response.status =="KO") {
+      _getEnvInfoResponse: function (result) {
+        if (result.detail.response.status == "KO") {
           // . . .
         } else {
           this.envInfo = result.detail.response;
         }
       },
 
-      _getClusterInfo: function(envInfo) {
-        if(!envInfo) {
+      _getClusterInfo: function (envInfo) {
+        if (!envInfo) {
           return "";
         }
 
         let info = "Cluster Enabled: " + envInfo.clusterOn;
-        if(envInfo.clusterOn) {
+        if (envInfo.clusterOn) {
           info += " (Current Node ID: " + envInfo.clusterNodeId + ")"
         }
         return info
       },
 
-      _isSingleRepo: function(envInfo) {
-        if(envInfo && envInfo.repositories && envInfo.repositories.repositories) {
+      _isSingleRepo: function (envInfo) {
+        if (envInfo && envInfo.repositories && envInfo.repositories.repositories) {
           return envInfo.repositories.repositories.length === 1
         }
 
@@ -205,18 +217,18 @@
       // correctly refreshed. I believe the error occuring breaks
       // and maybe bubbles something.
       // => Simple alert, and then reload()
-      _ajaxCallFailure: function(evt, req) {
+      _ajaxCallFailure: function (evt, req) {
         alert("An error occured when running <Get Nuxeo Distribution>:\n\n" + evt.detail.error.stack);
         this._cleanUpResultDialogValues();
         location.reload();
       },
 
       // Result dialogs handling
-      _cleanUpResultDialogValues: function() {
+      _cleanUpResultDialogValues: function () {
         this.distributionResult = {};
       },
 
-      _resultDialogClosed: function() {
+      _resultDialogClosed: function () {
         this._cleanUpResultDialogValues();
       }
     });
