@@ -1,0 +1,144 @@
+<!--
+`nxpac-basic-action`
+@group Nuxeo UI
+@element nxpac-basic-action
+-->
+<!--
+A nuxeo card element that provides a button to call and operation and an area to
+display a description for that operations. Also provides the ability to view the
+JSON result of the operation.
+-->
+<dom-module id="nxpac-basic-action">
+  <template>
+    <style include="iron-flex iron-flex-alignment nuxeo-styles">
+      .displayed-to-right {
+        margin-left: 10px
+      }
+    </style>
+
+    <nuxeo-card>
+
+      <div class="layout horizontal center">
+        <nxpac-nuxeo-operation-button label="[[label]]"
+                                        operation="[[operation]]"
+                                        input="[[input]]"
+                                        sync-indexing$="[[syncIndexing]]"
+                                        params="[[params]]"
+                                        response="{{response}}"
+                                        notification="[[notification]]"
+                                        download="[[download]]"
+                                        event="[[event]]"
+                                        detail="[[detail]]"
+                                        async$="[[async]]"
+                                        poll-interval="[[pollInterval]]"
+                                        error-label="[[errorLabel]]">
+        </nxpac-nuxeo-operation-button>
+        <div class="layout flex displayed-to-right">[[i18n(description)]]</div>
+      </div>
+
+    </nuxeo-card>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'nxpac-basic-action',
+
+      behaviors: [Nuxeo.LayoutBehavior],
+
+      properties: {
+
+        /* The id of the operation, automation chain or script to call. */
+        operation: String,
+
+        /* Pass contextual information that will be forwarded to the operation,
+         * automation chain or script triggered as the input for the first
+         * operation. Possible options depend on the slot chosen.
+         * [Documentation](https://doc.nuxeo.com/nxdoc/web-ui-slots)
+         */
+        input: Object,
+
+        /**
+         * If true, documents changed by the operation call will be reindexed synchronously server side.
+         */
+        syncIndexing: Boolean,
+
+        /* The parameters to send. */
+        params: {
+          type: Object,
+          value() {
+            return {};
+          },
+        },
+
+        /* The response from the server. */
+        response: {
+          type: Object,
+          value: null
+        },
+
+        /* The text or i18n key to display in the notification. */
+        notification: {
+          type: String,
+          value: "Operation completed."
+        },
+
+        /* Trigger download of Blob response. */
+        download: {
+          type: Boolean,
+          value: false,
+        },
+
+        /* The event type to fire on completion. */
+        event: {
+          type: String,
+          value: 'operation-executed',
+        },
+
+        /* The detail of the event fired on completion.  */
+        detail: {
+          type: String,
+        },
+
+        /**
+         * If true, execute the operation asynchronously.
+         */
+        async: {
+          type: Boolean,
+          value: false,
+        },
+
+        /**
+         * Poll interval in ms.
+         */
+        pollInterval: {
+          type: Number,
+          value: 1000,
+        },
+
+        /**
+         * A custom label to be displayed if there is an error during the operation execution. If `undefined`, the
+         * original error message is shown. The label can receive a placeholder (i.e. `{0}`) to display the original
+         * error message.
+         */
+        errorLabel: {
+          type: String,
+        },
+
+        /**
+        * Label for the action button.
+        */
+        label: String,
+
+        /**
+        * Description for the action.
+        */
+        description: {
+          type: String,
+        }
+
+      }
+
+    });
+  </script>
+</dom-module>
