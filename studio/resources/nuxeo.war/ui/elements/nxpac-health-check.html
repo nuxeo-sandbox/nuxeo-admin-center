@@ -1,0 +1,82 @@
+<!--
+Displays the Health Check of the current application (see https://doc.nuxeo.com/n/zpC)
+
+User must be an administrator or an authorized user.
+-->
+<dom-module id="nxpac-health-check">
+  <template>
+    <style include="iron-flex iron-flex-alignment nuxeo-styles">
+      .ok {
+        color: green
+      }
+
+      .notok {
+        color: red
+      }
+    </style>
+
+    <iron-ajax id="getRunningStatus"
+               auto
+               url="/nuxeo/runningstatus"
+               method="GET"
+               on-response="_handleResponse"
+               on-error="_handleError">
+    </iron-ajax>
+
+    <template is="dom-repeat"
+              items="[[_statusResponse]]">
+
+      <paper-icon-item>
+        <iron-icon icon="icons:check-circle"
+                   class="ok"
+                   slot="item-icon"
+                   hidden$="[[!_isNotOK(item.value)]]"></iron-icon>
+        <iron-icon icon="icons:remove-circle"
+                   class="notok"
+                   slot="item-icon"
+                   hidden$="[[_isNotOK(item.value)]]"></iron-icon>
+
+        <div>[[i18n(item.key)]]</div>
+      </paper-icon-item>
+
+    </template>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'nxpac-health-check',
+      behaviors: [Nuxeo.LayoutBehavior],
+      properties: {
+        _statusResponse: {
+          type: Array,
+          value: function () { return []; }
+        }
+      },
+
+      _handleResponse: function (evt, req) {
+        var tempResponse = [];
+        Object.keys(evt.detail.response).forEach(function (key) {
+          tempResponse.push({
+            "key": key,
+            "value": evt.detail.response[key]
+          });
+        }.bind(this));
+        this._statusResponse = tempResponse;
+      },
+
+      _handleError: function (event, response) {
+        var message =  this.i18n('nxpac.label.message.healthcheckfailed')+ ": " + response.error;
+        this.fire('notify', { 'message': message });
+      },
+
+      _isNotOK: function (status) {
+        if (status === "ok") {
+          return true;
+        }
+        return false;
+      }
+
+    });
+  </script>
+</dom-module>
