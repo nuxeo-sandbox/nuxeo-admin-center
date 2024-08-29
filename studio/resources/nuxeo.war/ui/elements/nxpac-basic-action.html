@@ -4,9 +4,8 @@
 @element nxpac-basic-action
 -->
 <!--
-A nuxeo card element that provides a button to call and operation and an area to
-display a description for that operations. Also provides the ability to view the
-JSON result of the operation.
+A nuxeo card element that provides a button to call and operation or a url and
+an area to display a description for that button.
 -->
 <dom-module id="nxpac-basic-action">
   <template>
@@ -16,10 +15,19 @@ JSON result of the operation.
       }
     </style>
 
-    <nuxeo-card>
+    <iron-ajax id="urlCaller"
+               url="[[url]]"
+               method="[[method]]"
+               on-response="_handleIronAjaxResponse"
+               on-error="_handleIronAjaxError">
+    </iron-ajax>
 
+    <nuxeo-card>
       <div class="layout horizontal center">
-        <nxpac-nuxeo-operation-button label="[[label]]"
+
+        <!-- Only show if using an operation. -->
+        <nxpac-nuxeo-operation-button hidden$="[[!operation]]"
+                                      label="[[i18n(label)]]"
                                       operation="[[operation]]"
                                       input="[[input]]"
                                       sync-indexing$="[[syncIndexing]]"
@@ -33,9 +41,17 @@ JSON result of the operation.
                                       poll-interval="[[pollInterval]]"
                                       error-label="[[errorLabel]]">
         </nxpac-nuxeo-operation-button>
-        <div class="layout flex displayed-to-right">[[i18n(description)]]</div>
-      </div>
 
+        <!-- Only show if using a url -->
+        <paper-button hidden$="[[!url]]"
+                      class="primary"
+                      on-tap="_callURL">
+          [[i18n(label)]]
+        </paper-button>
+
+        <div class="layout flex displayed-to-right">[[i18n(description)]]</div>
+
+      </div>
     </nuxeo-card>
 
   </template>
@@ -49,7 +65,26 @@ JSON result of the operation.
       properties: {
 
         /* The id of the operation, automation chain or script to call. */
-        operation: String,
+        operation: {
+          type: String,
+          value: ""
+        },
+
+        /**
+        * A URL to call (typically used for management endpoint).
+        */
+        url: {
+          type: String,
+          value: ""
+        },
+
+        /**
+        * HTTP Method for `url`.
+        */
+        method: {
+          type: String,
+          value: "GET"
+        },
 
         /* Pass contextual information that will be forwarded to the operation,
          * automation chain or script triggered as the input for the first
@@ -74,7 +109,8 @@ JSON result of the operation.
         /* The response from the server. */
         response: {
           type: Object,
-          value: null
+          value: null,
+          notify: true
         },
 
         /* The text or i18n key to display in the notification. */
@@ -137,6 +173,24 @@ JSON result of the operation.
           type: String,
         }
 
+      },
+
+      _callURL: function () {
+        this.$.urlCaller.generateRequest();
+      },
+
+      // Callback from iron-ajax with success
+      _handleIronAjaxResponse: function (evt, req) {
+        this.response = evt.detail.response;
+      },
+
+      _handleIronAjaxError: function (event, response) {
+        var message = "Call to " + this.url + " failed: " + ": " + response.error;
+        this.fire('notify', { 'message': message });
+      },
+
+      _debug: function (object) {
+        debugger;
       }
 
     });
