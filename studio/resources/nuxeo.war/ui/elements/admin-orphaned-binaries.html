@@ -13,40 +13,40 @@
 
   The width of the button can be set in the :host style via the --admin-button-width variable
 -->
-<link rel="import" href="nuxeo-admin-confirm.html">
+<link rel="import"
+      href="nuxeo-admin-confirm.html">
 <dom-module id="admin-orphaned-binaries">
   <template>
     <style include="iron-flex iron-flex-alignment nuxeo-styles">
+      #deleteOrphanedBinariesButton {
+        width: var(--admin-button-width);
+      }
 
-    #deleteOrphanedBinariesButton {
-      width:  var(--admin-button-width);
-    }
+      .progressDiv {
+        width: 80%;
+        margin-left: 24px;
+      }
 
-    .progressDiv {
-      width: 80%;
-      margin-left: 24px;
-    }
+      .label: {
+        color: black;
+        font-weight: bold;
+      }
 
-    .label: {
-      color:  black;
-      font-weight: bold;
-    }
+      .resultSubTitle {
+        margin-bottom: 0;
+      }
 
-    .resultSubTitle {
-      margin-bottom: 0;
-    }
+      .resultSubValues {
+        margin-left: 15px;
+      }
 
-    .resultSubValues {
-      margin-left: 15px;
-    }
+      .resultEnabled {
+        color: black;
+      }
 
-    .resultEnabled {
-      color: black;
-    }
-
-    .resultDisabled {
-      color: lightgrey;
-    }
+      .resultDisabled {
+        color: lightgrey;
+      }
     </style>
 
     <iron-ajax id="callAjax"
@@ -71,9 +71,10 @@
     </iron-ajax>
 
     <paper-button id="deleteOrphanedBinariesButton"
-                  raised noink
+                  raised
+                  noink
                   on-tap="_deleteOrphanedBinaries">
-      Delete Orphaned Binaries 
+      Delete Orphaned Binaries
     </paper-button>
 
     <nuxeo-admin-confirm id="adminConfirmDialog"
@@ -84,7 +85,8 @@
                          confirm-ok-label="Delete"></nuxeo-admin-confirm>
 
     <!-- Display the result -->
-    <nuxeo-dialog id="resultDialog" with-backdrop>
+    <nuxeo-dialog id="resultDialog"
+                  with-backdrop>
       <h3>Delete Orphaned Binaries</h3>
 
       <nuxeo-card header="Result for Delete Orphaned Binaries">
@@ -94,31 +96,38 @@
                         style="display: [[displayProgressStyle]]"
                         indeterminate>
         </paper-progress>
-        <div class="progressDiv" style="display: [[displayProgressStyle]];margin-bottom:20px">
+        <div class="progressDiv"
+             style="display: [[displayProgressStyle]];margin-bottom:20px">
           [[processingInfo]]
         </div>
 
-        <div id="resultDetails" class="resultDisabled">
+        <div id="resultDetails"
+             class="resultDisabled">
           <span style="font-weight: bold;">Duration</span>: [[gcBinariesResult.duration]]
 
           <h5 class="resultSubTitle">Processed Binaries</h5>
           <div class="resultSubValues">
             <span class="label">Number</span>: [[gcBinariesResult.processed]]
-            <br/>
+            <br />
             <span class="label">Size</span>: [[gcBinariesResult.processedSize]]
           </div>
 
           <h5 class="resultSubTitle">Deleted Orphaned Binaries</h5>
           <div class="resultSubValues">
             <span class="label">Number</span>: [[gcBinariesResult.garbageCollected]]
-            <br/>
+            <br />
             <span class="label">Size</span>: [[gcBinariesResult.garbageCollectedSize]]
           </div>
         </div>
       </nuxeo-card>
 
-      <div class="buttons" style="float: right;">
-        <paper-button id="resultOkButton" dialog-dismiss class="primary" disabled on-click="_resultDialogClosed">Ok</paper-button>
+      <div class="buttons"
+           style="float: right;">
+        <paper-button id="resultOkButton"
+                      dialog-dismiss
+                      class="primary"
+                      disabled
+                      on-click="_resultDialogClosed">Ok</paper-button>
       </div>
     </nuxeo-dialog>
 
@@ -165,9 +174,9 @@
       },
 
       // Button is clicked
-      _deleteOrphanedBinaries: function(evt) {
-        if(evt.detail.sourceEvent.altKey) {
-          if(confirm("Delete orphaned binaries using the /binaries endpoint?")) {
+      _deleteOrphanedBinaries: function (evt) {
+        if (evt.detail.sourceEvent.altKey) {
+          if (confirm("Delete orphaned binaries using the /binaries endpoint?")) {
             this.useBinariesEndPoint = true;
             this._confirmDialogOk();
           }
@@ -179,7 +188,7 @@
 
       // nuxeo-admin-confirm dialog OK button clicked
       // Set up the ui (progress, etc.) and call Nuxeo
-      _confirmDialogOk: function() {
+      _confirmDialogOk: function () {
         // Reset values
         this.gcBinariesResult = {
           "duration": "...",
@@ -194,55 +203,55 @@
         this.displayProgressStyle = "";
         this.progressTimer = Date.now();
 
-        this.$.resultDetails.className="resultDisabled";
+        this.$.resultDetails.className = "resultDisabled";
 
         // Show result with timer
         this.$.resultDialog.toggle();
 
         // Call Nuxeo
-        if(this.useBinariesEndPoint) {
+        if (this.useBinariesEndPoint) {
           this.$.callBinariesEndpoint.generateRequest();
         } else {
           this.$.callAjax.generateRequest();
         }
       },
 
-      _confirmDialogCancel: function() {
+      _confirmDialogCancel: function () {
         // Nothing
       },
 
-      _bulkStatusChanged: function(newStatus) {
+      _bulkStatusChanged: function (newStatus) {
 
         let getStatus = true;
 
         Console.log("GC Orphaned Binaries, bulk status: " + newStatus.state);
         switch (newStatus.state) {
-        case "SCHEDULED":
-          // Let's wait a bit then check the status
+          case "SCHEDULED":
+            // Let's wait a bit then check the status
 
-          break;
+            break;
 
-        case "COMPLETED":
-          this._deleteOrphanedBinariesResponse(newStatus);
-          getStatus = false;
-          break;
+          case "COMPLETED":
+            this._deleteOrphanedBinariesResponse(newStatus);
+            getStatus = false;
+            break;
 
-        default:
-          Console.log("Unexpected staus. Still fetching.");
-          break;
+          default:
+            Console.log("Unexpected staus. Still fetching.");
+            break;
 
         }
 
-        if(getStatus) {
+        if (getStatus) {
           // Wait 3 seconds
-          setTimeout(function() {
-              this.$.getBulkStatus.generateRequest();
-            }.bind(this), 3000);
+          setTimeout(function () {
+            this.$.getBulkStatus.generateRequest();
+          }.bind(this), 3000);
         }
       },
 
       // Display the final response: Update the UI
-      _deleteOrphanedBinariesResponse: function(bulkStatus) {
+      _deleteOrphanedBinariesResponse: function (bulkStatus) {
         let result = "";
 
         this.gcBinariesResult = {
@@ -253,7 +262,7 @@
           "garbageCollectedSize": this._formatBytes(bulkStatus.result.deletedSize)
         };
 
-        this.$.resultDetails.className="resultEnabled"
+        this.$.resultDetails.className = "resultEnabled"
         this.$.resultOkButton.disabled = false;
         this.$.progress.disabled = true;
         this.processingInfo = "Processing done";
@@ -268,7 +277,7 @@
       // correctly refreshed. I believe the error occuring breaks
       // and maybe bubbles something.
       // => Simple alert, and then reload()
-      _ajaxCallFailure: function(evt, req) {
+      _ajaxCallFailure: function (evt, req) {
         alert("An error occured when running <Delete Orphan Binaries>:\n\n" + evt.detail.error.stack);
         this._cleanUpResultDialogValues();
         location.reload();
@@ -276,15 +285,15 @@
 
       // Success
       // Notice this is called for both launching the command, then checking its status.
-      _ajaxCallSuccess: function(evt, req) {
+      _ajaxCallSuccess: function (evt, req) {
         // the observer on bulkStatus handles everything.
         this.bulkStatus = evt.detail.response;
       },
 
-      _ajaxBinariesEndpointSuccess: function(evt, req) {
+      _ajaxBinariesEndpointSuccess: function (evt, req) {
         let reminder = 3000 - (Date.now() - this.progressTimer);
-        if(reminder > 500) {
-          setTimeout(function() {
+        if (reminder > 500) {
+          setTimeout(function () {
             this._binariesEndPointResponse(evt, req);
           }.bind(this), reminder);
         } else {
@@ -292,7 +301,7 @@
         }
       },
 
-      _binariesEndPointResponse: function(evt, req) {
+      _binariesEndPointResponse: function (evt, req) {
         let result = "";
         let resultJson = evt.detail.response;
 
@@ -304,7 +313,7 @@
           "garbageCollectedSize": this._formatBytes(resultJson.sizeBinariesGC)
         };
 
-        this.$.resultDetails.className="resultEnabled"
+        this.$.resultDetails.className = "resultEnabled"
         this.$.resultOkButton.disabled = false;
         this.$.progress.disabled = true;
         this.processingInfo = "Processing done";
@@ -314,32 +323,32 @@
       // ====================================
       // Result dialogs handling
       // ====================================
-      _cleanUpResultDialogValues: function() {
+      _cleanUpResultDialogValues: function () {
         this.gcBinariesResult = null;
         this.displayProgressStyle = "none";
-        this.progressTimer =  Date.now();
+        this.progressTimer = Date.now();
         this.processingInfo = "Processing request...";
       },
 
-      _resultDialogClosed: function() {
+      _resultDialogClosed: function () {
         this._cleanUpResultDialogValues();
       },
 
       // ====================================
       // Utilities
       // ====================================
-      _formatBytes: function(value) {
+      _formatBytes: function (value) {
 
-        if(!value) {
+        if (!value) {
           return 0;
         }
 
         const units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         let l = 0, n = parseInt(value, 10) || 0;
-        while(n >= 1024 && ++l){
-          n = n/1024;
+        while (n >= 1024 && ++l) {
+          n = n / 1024;
         }
-        return(n.toFixed(n < 10 && l > 0 ? 1 : 0) + ' ' + units[l]);
+        return (n.toFixed(n < 10 && l > 0 ? 1 : 0) + ' ' + units[l]);
       }
     });
   </script>
