@@ -5,30 +5,10 @@
   (Nuxeo verison, installed plugins).
 
   User must be an administrator or an authorized user.
-
-  There is no properties to set, usage is simple after importing the element:
-  <admin-nuxeo-distribution></admin-nuxeo-distribution>
-
-  The width of the button can be set in the :host style via the --admin-button-width variable
 -->
 <dom-module id="admin-nuxeo-distribution">
   <template>
     <style include="iron-flex iron-flex-alignment nuxeo-styles">
-      #getDistributionButton {
-        width: var(--admin-button-width);
-      }
-
-      nuxeo-dialog {
-        max-width: 700px;
-      }
-
-      /* Actually, for whatever reason, can't set this style on a div...
-       => using inline style */
-      .label: {
-        color: black;
-        font-weight: bold;
-      }
-
       .scrollableTable {
         height: 300px;
         overflow: auto;
@@ -59,29 +39,21 @@
       }
     </style>
 
-    <iron-ajax id="callAjax"
-               url="/nuxeo/api/v1/management/distribution"
-               method="GET"
-               on-response="_getDistributionResponse"
-               on-error="_ajaxCallFailure">
-    </iron-ajax>
-
-    <nuxeo-operation id="recomputeThumbnailsOp"
-                     op="javascript.adminCenter_GetEnvInfo"
+    <nuxeo-operation op="javascript.adminCenter_GetEnvInfo"
                      auto
-                     on-response="_getEnvInfoResponse"></nuxeo-operation>
+                     on-response="_getEnvInfoResponse">
+    </nuxeo-operation>
 
-    <paper-button id="getDistributionButton"
-                  raised
-                  noink
-                  on-tap="_getDistribution">
-      Nuxeo Server Info
-    </paper-button>
+    <nxpac-basic-action label="Nuxeo Server Info"
+                        description="Display information about the Nuxeo Server instance (version, environment, bundles, etc.) Uses a custom operation to fetch env values and the management endpoint to get distribution information."
+                        url="/nuxeo/api/v1/management/distribution"
+                        response="{{distributionResult}}">
+    </nxpac-basic-action>
 
     <!-- Display the result -->
     <nuxeo-dialog id="resultDialog"
                   with-backdrop>
-      <h3>Nuxeo Server Info</h3>
+      <h2>Nuxeo Server Info</h2>
 
       <nuxeo-card>
         <span style="font-style:italic">Important: In cluster mode, these information are about the node you are
@@ -146,13 +118,11 @@
         </div>
       </nuxeo-card>
 
-      <div class="buttons"
-           style="float: right;">
-        <paper-button id="resultOkButton"
-                      dialog-dismiss
-                      class="primary"
-                      on-click="_resultDialogClosed">Ok</paper-button>
+      <div class="buttons">
+        <paper-button dialog-dismiss
+                      class="primary">Close</paper-button>
       </div>
+
     </nuxeo-dialog>
 
   </template>
@@ -166,21 +136,14 @@
         envInfo: Object
       },
 
-      // Button is clicked
-      _getDistribution: function () {
-        // Reset values
-        this._cleanUpResultDialogValues();
+      observers: [
+        '_openDialog(distributionResult,envInfo)'
+      ],
 
-        // Call Nuxeo
-        this.$.callAjax.generateRequest();
-      },
-
-      // Callback from iron-ajax with success
-      _getDistributionResponse: function (evt, req) {
-
-        this._cleanUpResultDialogValues();
-        this.distributionResult = evt.detail.response;
-        this.$.resultDialog.toggle();
+      _openDialog: function (distributionResult, envInfo) {
+        if (distributionResult && envInfo) {
+          this.$.resultDialog.open();
+        }
       },
 
       // Callback from nuxeo-operation
@@ -199,9 +162,9 @@
 
         let info = "Cluster Enabled: " + envInfo.clusterOn;
         if (envInfo.clusterOn) {
-          info += " (Current Node ID: " + envInfo.clusterNodeId + ")"
+          info += " (Current Node ID: " + envInfo.clusterNodeId + ")";
         }
-        return info
+        return info;
       },
 
       _isSingleRepo: function (envInfo) {
@@ -210,27 +173,8 @@
         }
 
         return false;
-      },
-
-      // Ajax call failed
-      // Impossible to get the result dialog displayed, nor the page
-      // correctly refreshed. I believe the error occuring breaks
-      // and maybe bubbles something.
-      // => Simple alert, and then reload()
-      _ajaxCallFailure: function (evt, req) {
-        alert("An error occured when running <Get Nuxeo Distribution>:\n\n" + evt.detail.error.stack);
-        this._cleanUpResultDialogValues();
-        location.reload();
-      },
-
-      // Result dialogs handling
-      _cleanUpResultDialogValues: function () {
-        this.distributionResult = {};
-      },
-
-      _resultDialogClosed: function () {
-        this._cleanUpResultDialogValues();
       }
+
     });
   </script>
 </dom-module>

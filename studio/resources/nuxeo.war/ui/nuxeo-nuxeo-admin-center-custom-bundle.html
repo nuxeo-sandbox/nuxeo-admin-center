@@ -46,11 +46,12 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
   </template>
 </nuxeo-slot-content>
 
-
-<!-- <admin-nuxeo-distribution></admin-nuxeo-distribution>
-<div class="actionInfo">
-  Display information about Nuxeo Server (version, environment, bundles, …)
-</div>
+<nuxeo-slot-content name="adminCenter_distribution"
+                    slot="ADMIN_CENTER">
+  <template>
+      <admin-nuxeo-distribution></admin-nuxeo-distribution>
+  </template>
+</nuxeo-slot-content>
 
 <admin-orphaned-binaries class="actionButton"></admin-orphaned-binaries>
 <div class="actionButton actionInfo">
@@ -117,4 +118,4 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
 <admin-stream-scale class="actionButton"></admin-stream-scale>
 <div class="actionButton actionInfo">
   <span class="moreInfo">Info about Streams and the auto-scaling options</span>
-</div> -->
+</div>
