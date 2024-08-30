@@ -78,13 +78,15 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
   </template>
 </nuxeo-slot-content>
 
-<!--
+<!--== Thumbnails ===========================================================-->
+<nuxeo-slot-content name="adminCenter_recompute-thumbnails"
+                    slot="ADMIN_CENTER">
+  <template>
+    <admin-recompute-thumbnails></admin-recompute-thumbnails>
+  </template>
+</nuxeo-slot-content>
 
-<admin-recompute-thumbnails class="actionButton"></admin-recompute-thumbnails>
-<div class="actionButton actionInfo">
-  Recompute the thumbnails for all the documents found by a NXQL query. Default query searches for all
-  documents with the <code>Thumbnail</code> facet and no thumbnail.
-</div>
+<!--
 
 <admin-recompute-videos class="actionButton"></admin-recompute-videos>
 <div class="actionButton actionInfo">

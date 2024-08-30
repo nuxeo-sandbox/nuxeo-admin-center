@@ -1,34 +1,35 @@
 <!--
-  `admin-recompute-thumbnails`
+`admin-recompute-thumbnails`
 
-  Displays a button allowing for recomputing thumbnails.
+Displays a button allowing for recomputing thumbnails.
 
-  User must be an administrator or an authorized user.
-
-  There is no properties to set, usage is simple after importing the element:
-  <admin-recompute-thumbnails></admin-recompute-thumbnails>
-
-  The width of the button can be set in the :host style via the --admin-button-width variable
+User must be an administrator or an authorized user.
 -->
 <link rel="import"
       href="nuxeo-admin-confirm.html">
 <dom-module id="admin-recompute-thumbnails">
   <template>
     <style include="iron-flex iron-flex-alignment nuxeo-styles">
-      #recomputeThumbnailsButton {
-        width: var(--admin-button-width);
+      .displayed-to-right {
+        margin-left: 10px
       }
     </style>
 
     <nuxeo-operation id="recomputeThumbnailsOp"
-                     op="Picture.RecomputeViews"></nuxeo-operation>
+                     op="Picture.RecomputeViews">
+    </nuxeo-operation>
 
-    <paper-button id="recomputeThumbnailsButton"
-                  raised
-                  noink
-                  on-tap="_recomputeThumbnails">
-      Recompute Thumbnails</code>
-    </paper-button>
+    <nuxeo-card>
+      <div class="layout horizontal center">
+
+        <paper-button class="primary"
+                      on-tap="_recomputeThumbnails">
+          [[i18n('nxpac.label.action.recompute-thumbnails')]]
+        </paper-button>
+        <div class="layout flex displayed-to-right">[[i18n('nxpac.label.description.recompute-thumbnails')]]</div>
+
+      </div>
+    </nuxeo-card>
 
     <nuxeo-admin-confirm id="adminConfirmDialog"
                          confirm-prompt="Recompute thumbnails?"
@@ -36,7 +37,8 @@
                          prompt-label="Thumbnails will be recomputed for the documents returned by this query."
                          prompt="SELECT * FROM Document WHERE ecm:mixinType = 'Thumbnail' AND thumb:thumbnail/data IS NULL AND ecm:isVersion = 0 AND ecm:isProxy = 0 AND ecm:isTrashed = 0"
                          is-prompt
-                         confirm-ok-label="Recompute"></nuxeo-admin-confirm>
+                         confirm-ok-label="Recompute">
+    </nuxeo-admin-confirm>
 
     <!-- Display the result -->
     <nuxeo-dialog id="resultDialog"
