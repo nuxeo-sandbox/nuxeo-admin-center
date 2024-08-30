@@ -38,10 +38,10 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
                     slot="ADMIN_CENTER">
   <template>
     <nxpac-basic-action label="nxpac.label.action.download-log"
-                     description="nxpac.label.description.download-log"
-                     operation="javascript.adminCenter_downloadServerLog"
-                     download
-                     async>
+                        description="nxpac.label.description.download-log"
+                        operation="javascript.adminCenter_downloadServerLog"
+                        download
+                        async>
     </nxpac-basic-action>
   </template>
 </nuxeo-slot-content>
@@ -50,7 +50,7 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
 <nuxeo-slot-content name="adminCenter_distribution"
                     slot="ADMIN_CENTER">
   <template>
-      <admin-nuxeo-distribution></admin-nuxeo-distribution>
+    <admin-nuxeo-distribution></admin-nuxeo-distribution>
   </template>
 </nuxeo-slot-content>
 
@@ -58,7 +58,7 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
 <nuxeo-slot-content name="adminCenter_orphanedBinaries"
                     slot="ADMIN_CENTER">
   <template>
-      <admin-orphaned-binaries></admin-orphaned-binaries>
+    <admin-orphaned-binaries></admin-orphaned-binaries>
   </template>
 </nuxeo-slot-content>
 
@@ -66,24 +66,19 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
 <nuxeo-slot-content name="adminCenter_probes"
                     slot="ADMIN_CENTER">
   <template>
-      <admin-nuxeo-probes></admin-nuxeo-probes>
+    <admin-nuxeo-probes></admin-nuxeo-probes>
+  </template>
+</nuxeo-slot-content>
+
+<!--== Picture Views ========================================================-->
+<nuxeo-slot-content name="adminCenter_recompute-views"
+                    slot="ADMIN_CENTER">
+  <template>
+    <admin-recompute-views></admin-recompute-views>
   </template>
 </nuxeo-slot-content>
 
 <!--
-
-<admin-nuxeo-probes class="actionButton"></admin-nuxeo-probes>
-<div class="actionButton actionInfo">
-  Display information about misc. probes
-</div>
-
-
-
-<admin-recompute-views></admin-recompute-views>
-<div class="actionInfo">
-  Recompute the <code>picture:view</code> field for all the documents returned by a NXQL query. Default
-  query searches for all documents with the <code>Picture</code> facet not having a rendition.
-</div>
 
 <admin-recompute-thumbnails class="actionButton"></admin-recompute-thumbnails>
 <div class="actionButton actionInfo">

@@ -15,20 +15,26 @@
 <dom-module id="admin-recompute-views">
   <template>
     <style include="iron-flex iron-flex-alignment nuxeo-styles">
-      #recomputeViewsButton {
-        width: var(--admin-button-width);
+      .displayed-to-right {
+        margin-left: 10px
       }
     </style>
 
     <nuxeo-operation id="recomputeViewsOp"
-                     op="Picture.RecomputeViews"></nuxeo-operation>
+                     op="Picture.RecomputeViews">
+    </nuxeo-operation>
 
-    <paper-button id="recomputeViewsButton"
-                  raised
-                  noink
-                  on-tap="_recomputeViews">
-      Recompute <code style="margin-left: 10px">picture:views</code>
-    </paper-button>
+    <nuxeo-card>
+      <div class="layout horizontal center">
+
+        <paper-button class="primary"
+                      on-tap="_recomputeViews">
+          [[i18n('nxpac.label.action.recompute-views')]]
+        </paper-button>
+        <div class="layout flex displayed-to-right">[[i18n('nxpac.label.description.recompute-views')]]</div>
+
+      </div>
+    </nuxeo-card>
 
     <nuxeo-admin-confirm id="adminConfirmDialog"
                          confirm-prompt="Recompute picture:views fields?"
@@ -36,7 +42,8 @@
                          prompt-label="picture:views will be recomputed for the documents returned by this query."
                          prompt="SELECT * FROM Document WHERE ecm:mixinType = 'Picture' AND picture:views/*/title IS NULL"
                          is-prompt
-                         confirm-ok-label="Recompute"></nuxeo-admin-confirm>
+                         confirm-ok-label="Recompute">
+    </nuxeo-admin-confirm>
 
     <!-- Display the result -->
     <nuxeo-dialog id="resultDialog"
