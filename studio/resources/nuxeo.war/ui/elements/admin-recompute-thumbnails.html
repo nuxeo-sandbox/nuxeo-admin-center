@@ -10,20 +10,22 @@
 
   The width of the button can be set in the :host style via the --admin-button-width variable
 -->
-<link rel="import" href="nuxeo-admin-confirm.html">
+<link rel="import"
+      href="nuxeo-admin-confirm.html">
 <dom-module id="admin-recompute-thumbnails">
   <template>
     <style include="iron-flex iron-flex-alignment nuxeo-styles">
-    #recomputeThumbnailsButton {
-      width:  var(--admin-button-width);
-    }
+      #recomputeThumbnailsButton {
+        width: var(--admin-button-width);
+      }
     </style>
 
     <nuxeo-operation id="recomputeThumbnailsOp"
                      op="Picture.RecomputeViews"></nuxeo-operation>
 
     <paper-button id="recomputeThumbnailsButton"
-                  raised noink
+                  raised
+                  noink
                   on-tap="_recomputeThumbnails">
       Recompute Thumbnails</code>
     </paper-button>
@@ -37,16 +39,20 @@
                          confirm-ok-label="Recompute"></nuxeo-admin-confirm>
 
     <!-- Display the result -->
-    <nuxeo-dialog id="resultDialog" with-backdrop>
+    <nuxeo-dialog id="resultDialog"
+                  with-backdrop>
       <h3>Recompute picture:views</h3>
 
       <p>
-        The thumbnails are being recomputed.<br/>
+        The thumbnails are being recomputed.<br />
         It is an asynchronous process: Please, monitor the log to check once it is done.
       </p>
 
-      <div class="buttons" style="float: right;">
-        <paper-button id="resultOkButton" dialog-dismiss class="primary">Ok</paper-button>
+      <div class="buttons"
+           style="float: right;">
+        <paper-button id="resultOkButton"
+                      dialog-dismiss
+                      class="primary">Ok</paper-button>
       </div>
     </nuxeo-dialog>
 
@@ -66,13 +72,13 @@
       },
 
       // Button is clicked
-      _recomputeThumbnails: function() {
+      _recomputeThumbnails: function () {
         this.$.adminConfirmDialog.toggle();
       },
 
       // nuxeo-admin-confirm dialog OK button clicked
-      _confirmDialogOk: function(evt, result) {
-        if(!confirm("Compute thumbnails for this query?\n\n" + result.prompt)) {
+      _confirmDialogOk: function (evt, result) {
+        if (!confirm("Compute thumbnails for this query?\n\n" + result.prompt)) {
           return;
         }
 
@@ -82,15 +88,15 @@
         };
 
         op.execute()
-          .then(function(result) {
+          .then(function (result) {
             this.$.resultDialog.toggle();
           }.bind(this))
-          .catch(function(error) {
+          .catch(function (error) {
             alert("An error occured when running <Recompute thumbnails>:\n\n" + error);
           }.bind(this));
       },
 
-      _confirmDialogCancel: function() {
+      _confirmDialogCancel: function () {
         // Nothing
       },
     });
