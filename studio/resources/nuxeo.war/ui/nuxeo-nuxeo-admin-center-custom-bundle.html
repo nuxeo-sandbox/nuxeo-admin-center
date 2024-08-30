@@ -37,8 +37,8 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
 <nuxeo-slot-content name="adminCenter_downloadServerLog"
                     slot="ADMIN_CENTER">
   <template>
-    <nxpac-basic-action label="Download Log"
-                     description="Download Nuxeo server.log. Uses a custom operation to fetch and zip the log."
+    <nxpac-basic-action label="nxpac.label.action.download-log"
+                     description="nxpac.label.description.download-log"
                      operation="javascript.adminCenter_downloadServerLog"
                      download
                      async>
@@ -63,13 +63,6 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
 </nuxeo-slot-content>
 
 <!--
-<div class="actionButton actionInfo">
-  Search and delete binaries not linked to any document. This action frees storage space.<br />
-  (Available for Nuxeo LTS >= 2021.38 under some conditions, see <a class="link"
-     target="_blank"
-     href="https://doc.nuxeo.com/rest-api/1/blobs-endpoint/#status-codes">this documentation</a>)
-</div>
-
 
 <admin-nuxeo-probes class="actionButton"></admin-nuxeo-probes>
 <div class="actionButton actionInfo">
