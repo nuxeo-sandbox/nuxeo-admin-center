@@ -59,6 +59,10 @@
       text-align: left;
       padding-left: 20px;
     }
+
+    .displayed-to-right {
+        margin-left: 10px
+    }
     </style>
 
     <iron-ajax id="callAjax"
@@ -68,15 +72,21 @@
                on-error="_ajaxCallFailure">
     </iron-ajax>
 
-    <paper-button id="getProbesButton"
-                  raised noink
-                  on-tap="_getProbes">
-      Probes
-    </paper-button>
+    <nuxeo-card>
+      <div class="layout horizontal center">
+
+        <paper-button class="primary"
+                      on-tap="_getProbes">
+          [[i18n('nxpac.label.action.probes')]]
+        </paper-button>
+        <div class="layout flex displayed-to-right">[[i18n('nxpac.label.description.probes')]]</div>
+
+      </div>
+    </nuxeo-card>
 
     <!-- Display the result -->
     <nuxeo-dialog id="resultDialog" with-backdrop>
-      <h3>Probes</h3>
+      <h2>Probes</h2>
 
       <nuxeo-card>
 

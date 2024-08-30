@@ -54,11 +54,19 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
   </template>
 </nuxeo-slot-content>
 
-<!--== Nuxeo Server Info ====================================================-->
+<!--== Orphaned Binaries ====================================================-->
 <nuxeo-slot-content name="adminCenter_orphanedBinaries"
                     slot="ADMIN_CENTER">
   <template>
       <admin-orphaned-binaries></admin-orphaned-binaries>
+  </template>
+</nuxeo-slot-content>
+
+<!--== Probes ===============================================================-->
+<nuxeo-slot-content name="adminCenter_probes"
+                    slot="ADMIN_CENTER">
+  <template>
+      <admin-nuxeo-probes></admin-nuxeo-probes>
   </template>
 </nuxeo-slot-content>
 
