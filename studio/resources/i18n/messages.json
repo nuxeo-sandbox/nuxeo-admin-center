@@ -5,5 +5,7 @@
   "runtime": "Runtime",
   "stream": "Stream",
   "nxpac.label.admin-center-page-header": "Admin Center",
-  "nxpac.label.message.healthcheckfailed": "Unable to call Health Check"
+  "nxpac.label.message.healthcheckfailed": "Unable to call Health Check",
+  "nxpac.label.action.orphaned-binaries": "Delete Orphaned Binaries",
+  "nxpac.label.description.orphaned-binaries": "Delete binaries not linked to any document. This action frees storage space."
 }

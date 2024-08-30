@@ -109,10 +109,6 @@ with a "prompt" property:
       max-width: 700px;
     }
 
-    .confirmPrompt {
-      font-size: larger;
-    }
-
     .promptLabel {
     }
 
@@ -124,10 +120,8 @@ with a "prompt" property:
     </style>
 
     <nuxeo-dialog id="confirmDialog" with-backdrop>
-      <div class="confirmPrompt">
-        [[confirmPrompt]]
-      </div>
-      
+      <h2>[[confirmPrompt]]</h2>
+
       <div id="confirmInfoDiv">
       </div>
 

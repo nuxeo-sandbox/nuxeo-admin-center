@@ -27,7 +27,7 @@
         margin-left: 24px;
       }
 
-      .label: {
+      .label {
         color: black;
         font-weight: bold;
       }
@@ -46,6 +46,10 @@
 
       .resultDisabled {
         color: lightgrey;
+      }
+
+      .displayed-to-right {
+        margin-left: 10px
       }
     </style>
 
@@ -70,24 +74,30 @@
                on-error="_ajaxCallFailure">
     </iron-ajax>
 
-    <paper-button id="deleteOrphanedBinariesButton"
-                  raised
-                  noink
-                  on-tap="_deleteOrphanedBinaries">
-      Delete Orphaned Binaries
-    </paper-button>
+    <nuxeo-card>
+      <div class="layout horizontal center">
+
+        <paper-button class="primary"
+                      on-tap="_deleteOrphanedBinaries">
+          [[i18n('nxpac.label.action.orphaned-binaries')]]
+        </paper-button>
+        <div class="layout flex displayed-to-right">[[i18n('nxpac.label.description.orphaned-binaries')]]</div>
+
+      </div>
+    </nuxeo-card>
 
     <nuxeo-admin-confirm id="adminConfirmDialog"
                          confirm-prompt="Delete the orphaned binaries?"
                          confirm-info="This is an asynchronous call, using the Bulk Action Framework. It can take time if there are a lot of orphaned binaries: Be patient (and monitor server.log for errors).<br /><br />
                          ⚠️ <span>If your repository is not compatible with the required conditions (ecm:blobKeys, etc.) ⚠️<br />Cancel this dialog then alt-click the 'Delete Orphaned Binaries' button. This will trigger the previous, synchronous endpoint (see https://doc.nuxeo.com/rest-api/1/binaries-endpoint/)</nuxeo-admin-confirm></span>
                          <br /><br />ℹ️ <span style='font-size: smaller'>Also, notice that since LTS 2021.35, cleaning of binaries is automatic when storage is MongoDB (so, deleting a document automatically deletes its binaries if no other document is linked to them), ecm:blobKeys capability is turned on, etc.: See NXP-31594.<br />If your data was first deployed in this context, the feature will find no orphaned binaries and this is normal.</span>"
-                         confirm-ok-label="Delete"></nuxeo-admin-confirm>
+                         confirm-ok-label="Delete">
+    </nuxeo-admin-confirm>
 
     <!-- Display the result -->
     <nuxeo-dialog id="resultDialog"
                   with-backdrop>
-      <h3>Delete Orphaned Binaries</h3>
+      <h2>Delete Orphaned Binaries</h2>
 
       <nuxeo-card header="Result for Delete Orphaned Binaries">
 

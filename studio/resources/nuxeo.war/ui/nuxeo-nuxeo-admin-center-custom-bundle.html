@@ -54,7 +54,15 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
   </template>
 </nuxeo-slot-content>
 
-<!-- <admin-orphaned-binaries class="actionButton"></admin-orphaned-binaries>
+<!--== Nuxeo Server Info ====================================================-->
+<nuxeo-slot-content name="adminCenter_orphanedBinaries"
+                    slot="ADMIN_CENTER">
+  <template>
+      <admin-orphaned-binaries></admin-orphaned-binaries>
+  </template>
+</nuxeo-slot-content>
+
+<!--
 <div class="actionButton actionInfo">
   Search and delete binaries not linked to any document. This action frees storage space.<br />
   (Available for Nuxeo LTS >= 2021.38 under some conditions, see <a class="link"
