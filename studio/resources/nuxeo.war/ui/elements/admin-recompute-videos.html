@@ -1,14 +1,9 @@
 <!--
-  `admin-recompute-videos`
+`admin-recompute-videos`
 
-  Displays a button allowing for recomputing video renditions
+Displays a button allowing for recomputing video renditions
 
-  User must be an administrator or an authorized user.
-
-  There is no properties to set, usage is simple after importing the element:
-  <admin-recompute-videos></admin-recompute-videos>
-
-  The width of the button can be set in the :host style via the --admin-button-width variable
+User must be an administrator or an authorized user.
 -->
 <link rel="import"
       href="nuxeo-admin-confirm.html">
@@ -55,15 +50,22 @@
         font-weight: bold;
       }
 
-      /* Other styles */
+      .displayed-to-right {
+        margin-left: 10px
+      }
     </style>
 
-    <paper-button id="recomputeVideosButton"
-                  raised
-                  noink
-                  on-tap="_recomputeVideos">
-      Recompute Videos
-    </paper-button>
+    <nuxeo-card>
+      <div class="layout horizontal center">
+
+        <paper-button class="primary"
+                      on-tap="_recomputeVideos">
+          [[i18n('nxpac.label.action.recompute-videos')]]
+        </paper-button>
+        <div class="layout flex displayed-to-right">[[i18n('nxpac.label.description.recompute-videos')]]</div>
+
+      </div>
+    </nuxeo-card>
 
     <nuxeo-dialog id="confirmDialog"
                   with-backdrop>

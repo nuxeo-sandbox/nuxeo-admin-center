@@ -86,15 +86,15 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
   </template>
 </nuxeo-slot-content>
 
+<!--== Videos ===============================================================-->
+<nuxeo-slot-content name="adminCenter_recompute-videos"
+                    slot="ADMIN_CENTER">
+  <template>
+    <admin-recompute-videos></admin-recompute-videos>
+  </template>
+</nuxeo-slot-content>
+
 <!--
-
-<admin-recompute-videos class="actionButton"></admin-recompute-videos>
-<div class="actionButton actionInfo">
-  Recompute renditions (all or only some) for all the documents found by a NXQL query. Default query
-  searches for all documents with the <code>Video</code> facet and no renditions. Can optionnaly also
-  recompute the video info.
-</div>
-
 
 <admin-reindex-repository></admin-reindex-repository>
 <div class="actionInfo">
