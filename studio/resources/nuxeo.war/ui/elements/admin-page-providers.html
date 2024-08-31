@@ -1,22 +1,13 @@
 <!--
-  `admin-page-providers`
+`admin-page-providers`
 
-  Displays a button allowing for fetching the list of page-providers
+Displays a button allowing for fetching the list of page-providers
 
-  User must be an administrator or an authorized user.
-
-  There is no properties to set, usage is simple after importing the element:
-  <admin-page-providers></admin-page-providers>
-
-  The width of the button can be set in the :host style via the --admin-button-width variable
+User must be an administrator or an authorized user.
 -->
 <dom-module id="admin-page-providers">
   <template>
     <style include="iron-flex iron-flex-alignment nuxeo-styles">
-      #gcOrphanedWorkflowsButton {
-        width: var(--admin-button-width);
-      }
-
       nuxeo-dialog {
         max-width: 50%;
       }
@@ -29,6 +20,10 @@
         border-color: grey;
         padding: 5px;
       }
+
+      .displayed-to-right {
+        margin-left: 10px
+      }
     </style>
 
     <iron-ajax id="callAjax"
@@ -38,17 +33,22 @@
                on-error="_ajaxCallFailure">
     </iron-ajax>
 
-    <paper-button id="gcOrphanedWorkflowsButton"
-                  raised
-                  noink
-                  on-tap="_getPageProviders">
-      Page Providers
-    </paper-button>
+    <nuxeo-card>
+      <div class="layout horizontal center">
+
+        <paper-button class="primary"
+                      on-tap="_getPageProviders">
+          [[i18n('nxpac.label.action.page-providers')]]
+        </paper-button>
+        <div class="layout flex displayed-to-right">[[i18n('nxpac.label.description.page-providers')]]</div>
+
+      </div>
+    </nuxeo-card>
 
     <!-- Display the result -->
     <nuxeo-dialog id="resultDialog"
                   with-backdrop>
-      <h3>Page Providers</h3>
+      <h2>[[i18n('nxpac.label.action.page-providers')]]</h2>
 
       <nuxeo-card>
         <div role="widget">

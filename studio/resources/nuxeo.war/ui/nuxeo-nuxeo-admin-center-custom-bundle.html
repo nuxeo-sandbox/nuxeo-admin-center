@@ -103,13 +103,15 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
   </template>
 </nuxeo-slot-content>
 
-<!--
+<!--== Page Providers =======================================================-->
+<nuxeo-slot-content name="adminCenter_page-providers"
+                    slot="ADMIN_CENTER">
+  <template>
+    <admin-page-providers></admin-page-providers>
+  </template>
+</nuxeo-slot-content>
 
-<admin-page-providers class="actionButton"></admin-page-providers>
-<div class="actionButton actionInfo">
-  Display the page providers deployed (name and class)<br />
-  <span class="moreInfo">(Available for Nuxeo LTS >= 2021.34)</span>
-</div>
+<!--
 
 <admin-gc-orphaned-versions class="actionButton"></admin-gc-orphaned-versions>
 <div class="actionButton actionInfo">
