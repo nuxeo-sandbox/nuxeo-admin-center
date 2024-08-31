@@ -182,6 +182,8 @@ an area to display a description for that button.
       // Callback from iron-ajax with success
       _handleIronAjaxResponse: function (evt, req) {
         this.response = evt.detail.response;
+        var message = this.i18n(this.label) + " Executed.";
+        this.fire('notify', { 'message': message });
       },
 
       _handleIronAjaxError: function (event, response) {
