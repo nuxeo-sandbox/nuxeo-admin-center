@@ -123,13 +123,19 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
   </template>
 </nuxeo-slot-content>
 
-<!--
+<!--== Orphaned Workflows ===================================================-->
+<nuxeo-slot-content name="adminCenter_orphaned-workflows"
+                    slot="ADMIN_CENTER">
+  <template>
+    <nxpac-basic-action label="nxpac.label.action.gc-workflows"
+                        description="nxpac.label.description.gc-workflows"
+                        url="/nuxeo/api/v1/management/workflows/orphaned"
+                        method="DELETE">
+    </nxpac-basic-action>
+  </template>
+</nuxeo-slot-content>
 
-<admin-gc-workflows></admin-gc-workflows>
-<div class="actionInfo">
-  Garbage collect all the orphaned workflows (for which all associated documents have been removed) as well
-  as workflows in state 'done' or 'canceled'.
-</div>
+<!--
 
 <admin-stream-scale class="actionButton"></admin-stream-scale>
 <div class="actionButton actionInfo">
