@@ -23,7 +23,7 @@
   "nxpac.label.description.reindex-repository": "Reindex the whole repository. Tip: use Nuxeo Dev Tools to limit this to certain documents.",
   "nxpac.label.description.page-providers": "Display information about deployed Page Providers.",
   "nxpac.label.description.gc-orphaned-versions": "Delete any document versions for which the live document no longer exists.",
-  "nxpac.label.description.gc-workflows": "Delete any workflows for which: all documentes have been deleted; the state is 'done'; or the state is 'cancelled'",
+  "nxpac.label.description.gc-workflows": "Delete any workflows for which: all documents have been deleted; the state is 'done'; or the state is 'cancelled'.",
   "nxpac.label.description.stream-scale": "Display info about streams and auto-scaling options.",
   "elasticSearch": "Elasticsearch",
   "ldapDirectories": "LDAP Directories",
