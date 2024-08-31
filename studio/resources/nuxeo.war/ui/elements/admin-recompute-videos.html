@@ -32,12 +32,6 @@ User must be an administrator or an authorized user.
         max-width: 700px;
       }
 
-      .confirmPrompt {
-        font-size: larger;
-      }
-
-      .promptLabel {}
-
       /* Work-around missalignment of the OK button */
       .buttons {
         padding-right: 24px;
@@ -69,9 +63,7 @@ User must be an administrator or an authorized user.
 
     <nuxeo-dialog id="confirmDialog"
                   with-backdrop>
-      <div class="confirmPrompt">
-        Recompute Video Renditions?
-      </div>
+      <h2>Recompute Video Renditions?</h2>
 
       <div>
         <div class="label">NXQL Query</div>
@@ -107,7 +99,7 @@ User must be an administrator or an authorized user.
     <!-- Display the result -->
     <nuxeo-dialog id="resultDialog"
                   with-backdrop>
-      <h3>Recompute Videos</h3>
+      <h2>[[i18n('nxpac.label.action.recompute-videos')]]</h2>
 
       <p>
         The videos are being recomputed.<br />

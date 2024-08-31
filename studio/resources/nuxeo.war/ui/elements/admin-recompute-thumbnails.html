@@ -32,7 +32,7 @@ User must be an administrator or an authorized user.
     </nuxeo-card>
 
     <nuxeo-admin-confirm id="adminConfirmDialog"
-                         confirm-prompt="Recompute thumbnails?"
+                         confirm-prompt="Recompute Thumbnails?"
                          confirm-info="Enter the NXQL query to use."
                          prompt-label="Thumbnails will be recomputed for the documents returned by this query."
                          prompt="SELECT * FROM Document WHERE ecm:mixinType = 'Thumbnail' AND thumb:thumbnail/data IS NULL AND ecm:isVersion = 0 AND ecm:isProxy = 0 AND ecm:isTrashed = 0"
@@ -43,7 +43,7 @@ User must be an administrator or an authorized user.
     <!-- Display the result -->
     <nuxeo-dialog id="resultDialog"
                   with-backdrop>
-      <h3>Recompute picture:views</h3>
+      <h2>[[i18n('nxpac.label.action.recompute-thumbnails')]]</h2>
 
       <p>
         The thumbnails are being recomputed.<br />

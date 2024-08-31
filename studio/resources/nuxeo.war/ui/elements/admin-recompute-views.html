@@ -32,7 +32,7 @@ User must be an administrator or an authorized user.
     </nuxeo-card>
 
     <nuxeo-admin-confirm id="adminConfirmDialog"
-                         confirm-prompt="Recompute picture:views fields?"
+                         confirm-prompt="Recompute Picture Renditions?"
                          confirm-info="Enter the NXQL query to use."
                          prompt-label="picture:views will be recomputed for the documents returned by this query."
                          prompt="SELECT * FROM Document WHERE ecm:mixinType = 'Picture' AND picture:views/*/title IS NULL"
@@ -43,7 +43,7 @@ User must be an administrator or an authorized user.
     <!-- Display the result -->
     <nuxeo-dialog id="resultDialog"
                   with-backdrop>
-      <h3>Recompute picture:views</h3>
+      <h2>[[i18n('nxpac.label.action.recompute-views')]]</h2>
 
       <p>
         The views are being recomputed.<br />
