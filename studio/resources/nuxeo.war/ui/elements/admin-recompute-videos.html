@@ -10,59 +10,63 @@
 
   The width of the button can be set in the :host style via the --admin-button-width variable
 -->
-<link rel="import" href="nuxeo-admin-confirm.html">
+<link rel="import"
+      href="nuxeo-admin-confirm.html">
 <dom-module id="admin-recompute-videos">
   <template>
     <style include="iron-flex iron-flex-alignment nuxeo-styles">
-    #recomputeVideosButton {
-      width:  var(--admin-button-width);
-    }
+      #recomputeVideosButton {
+        width: var(--admin-button-width);
+      }
 
-    /* Used for the confim dialog */
-    /* see https://stackoverflow.com/questions/34696452/how-to-use-a-fixed-font-in-polymers-paper-textarea */
-    paper-textarea {
-      --iron-autogrow-textarea: {
+      /* Used for the confim dialog */
+      /* see https://stackoverflow.com/questions/34696452/how-to-use-a-fixed-font-in-polymers-paper-textarea */
+      paper-textarea {
+        --iron-autogrow-textarea: {
           font-family: monospace;
           font-size: smaller;
           word-break: break-all;
-        };
-      margin-top: 0;
-      margin-left:  15px;
-    }
+        }
 
-    nuxeo-dialog {
-      max-width: 700px;
-    }
+        ;
+        margin-top: 0;
+        margin-left: 15px;
+      }
 
-    .confirmPrompt {
-      font-size: larger;
-    }
+      nuxeo-dialog {
+        max-width: 700px;
+      }
 
-    .promptLabel {
-    }
+      .confirmPrompt {
+        font-size: larger;
+      }
 
-    /* Work-around missalignment of the OK button */
-    .buttons {
-      padding-right: 24px;
-      padding-bottom: 12px;
-    }
+      .promptLabel {}
 
-    /* Can't have bold label :-/ */
-    .label {
-      color: black;
-      font-weight: bold;
-    }
+      /* Work-around missalignment of the OK button */
+      .buttons {
+        padding-right: 24px;
+        padding-bottom: 12px;
+      }
 
-    /* Other styles */
+      /* Can't have bold label :-/ */
+      .label {
+        color: black;
+        font-weight: bold;
+      }
+
+      /* Other styles */
     </style>
 
     <paper-button id="recomputeVideosButton"
-                  raised noink
+                  raised
+                  noink
                   on-tap="_recomputeVideos">
       Recompute Videos
     </paper-button>
 
-    <nuxeo-dialog id="confirmDialog" with-backdrop>
+    <nuxeo-dialog id="confirmDialog"
+                  with-backdrop>
       <div class="confirmPrompt">
         Recompute Video Renditions?
       </div>
@@ -76,9 +80,10 @@
       <div>
         <div class="label">Conversions to Recompute</div>
         <span>Enter a comma-separated list</span>
-        <br/>
+        <br />
         <span>If let empty, every enabled conversion is recomputed.</span>
-        <nuxeo-textarea value="{{conversionNames}}" placeholder="Ex.: MP4 480p,WebM 480p"></nuxeo-textarea>
+        <nuxeo-textarea value="{{conversionNames}}"
+                        placeholder="Ex.: MP4 480p,WebM 480p"></nuxeo-textarea>
       </div>
 
       <div>
@@ -89,22 +94,29 @@
       </div>
 
       <div class="buttons">
-        <paper-button dialog-dismiss class="secondary" on-click="_confirmCancel">Cancel</paper-button>
-        <paper-button on-click="_confirmOk" class="primary">Recompute</paper-button>
+        <paper-button dialog-dismiss
+                      class="secondary"
+                      on-click="_confirmCancel">Cancel</paper-button>
+        <paper-button on-click="_confirmOk"
+                      class="primary">Recompute</paper-button>
       </div>
     </nuxeo-dialog>
 
     <!-- Display the result -->
-    <nuxeo-dialog id="resultDialog" with-backdrop>
+    <nuxeo-dialog id="resultDialog"
+                  with-backdrop>
       <h3>Recompute Videos</h3>
 
       <p>
-        The videos are being recomputed.<br/>
+        The videos are being recomputed.<br />
         It is an asynchronous process: Please, monitor the log to check once it is done.
       </p>
 
-      <div class="buttons" style="float: right;">
-        <paper-button id="resultOkButton" dialog-dismiss class="primary">Ok</paper-button>
+      <div class="buttons"
+           style="float: right;">
+        <paper-button id="resultOkButton"
+                      dialog-dismiss
+                      class="primary">Ok</paper-button>
       </div>
     </nuxeo-dialog>
 
@@ -130,34 +142,34 @@
       },
 
       // Button is clicked
-      _recomputeVideos: function() {
+      _recomputeVideos: function () {
         this.$.confirmDialog.toggle();
       },
 
       // nuxeo-admin-confirm dialog OK button clicked
-      _confirmOk: function(evt, result) {
+      _confirmOk: function (evt, result) {
         let txt = "Parameters:\n";
         txt += "Query:\n" + this.nxql + "\n\n";
         txt += "Renditions: " + (this.conversionNames === "" ? "All" : this.conversionNames) + "\n\n";
         txt += "Recompute video info: " + this.recomputeAllVideoInfo;
-        if(!confirm(txt)) {
+        if (!confirm(txt)) {
           this.$.confirmDialog.close();
           return;
         }
 
         let conversions = this.conversionNames;
-        if(conversions) {
+        if (conversions) {
           conversions = conversions.split(",");
           conversions = conversions.map(entry => entry.trim());
         } else {
           conversions = [];
         }
- 
+
         let params = new URLSearchParams();
-        params.append('query',this.nxql);
+        params.append('query', this.nxql);
         params.append('recomputeAllVideoInfo', this.recomputeAllVideoInfo);
-        conversions.forEach(conversion => params.append('conversionNames',conversion));
-        
+        conversions.forEach(conversion => params.append('conversionNames', conversion));
+
         fetch('/nuxeo/api/v1/management/videos/recompute/', {
           method: 'POST',
           headers: {
@@ -175,7 +187,7 @@
         });
       },
 
-      _confirmCancel: function() {
+      _confirmCancel: function () {
         // Nothing
       }
     });
