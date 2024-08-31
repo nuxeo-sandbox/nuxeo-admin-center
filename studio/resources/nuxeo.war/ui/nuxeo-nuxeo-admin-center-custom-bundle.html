@@ -111,16 +111,19 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
   </template>
 </nuxeo-slot-content>
 
+<!--== Orphaned Versions ====================================================-->
+<nuxeo-slot-content name="adminCenter_orphaned-versions"
+                    slot="ADMIN_CENTER">
+  <template>
+    <nxpac-basic-action label="nxpac.label.action.gc-orphaned-versions"
+                        description="nxpac.label.description.gc-orphaned-versions"
+                        url="/nuxeo/api/v1/management/versions/orphaned"
+                        method="DELETE">
+    </nxpac-basic-action>
+  </template>
+</nuxeo-slot-content>
+
 <!--
-
-<admin-gc-orphaned-versions class="actionButton"></admin-gc-orphaned-versions>
-<div class="actionButton actionInfo">
-  <span class="moreInfo">(Available for Nuxeo LTS >= 2021.31)</span>
-</div>
-
-
-
-
 
 <admin-gc-workflows></admin-gc-workflows>
 <div class="actionInfo">
