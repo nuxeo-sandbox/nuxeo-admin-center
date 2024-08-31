@@ -1,14 +1,9 @@
 <!--
-  `admin-stream-scale`
+`admin-stream-scale`
 
-  Displays a button allowing for fetching the list of page-providers
+Displays a button allowing for fetching the list of page-providers
 
-  User must be an administrator or an authorized user.
-
-  There is no properties to set, usage is simple after importing the element:
-  <admin-stream-scale></admin-stream-scale>
-
-  The width of the button can be set in the :host style via the --admin-button-width variable
+User must be an administrator or an authorized user.
 -->
 <dom-module id="admin-stream-scale">
   <template>
@@ -81,12 +76,16 @@
       font-size: 0.8rem;*/
       }
 
-      .center {
+      .td-center {
         text-align: center
       }
 
       .withMarginTop {
         margin-top: 15px;
+      }
+
+      .displayed-to-right {
+        margin-left: 10px
       }
     </style>
 
@@ -97,17 +96,22 @@
                on-error="_ajaxCallFailure">
     </iron-ajax>
 
-    <paper-button id="getStreamScaleButton"
-                  raised
-                  noink
-                  on-tap="_getStreamScale">
-      Scaling Analysis
-    </paper-button>
+    <nuxeo-card>
+      <div class="layout horizontal center">
+
+        <paper-button class="primary"
+                      on-tap="_getStreamScale">
+          [[i18n('nxpac.label.action.stream-scale')]]
+        </paper-button>
+        <div class="layout flex displayed-to-right">[[i18n('nxpac.label.description.stream-scale')]]</div>
+
+      </div>
+    </nuxeo-card>
 
     <!-- Display the result -->
     <nuxeo-dialog id="resultDialog"
                   with-backdrop>
-      <h2>Scaling Analysis</h2>
+      <h2>[[i18n('nxpac.label.action.stream-scale')]]</h2>
       <div>(See the <a class="link"
            href="https://doc.nuxeo.com/rest-api/1/stream-endpoint/#get-scaling-analysis"
            target="_blank">documentation</a> for more details.)</div>
@@ -165,11 +169,11 @@
                         items="[[streamScaleInfo.nodes]]">
                 <tr>
                   <td>[[item.hostname]]</td>
-                  <td class="center">[[item.cpuCores]]</td>
-                  <td class="center">[[_checkValue(item.created)]]</td>
-                  <td class="center">[[_checkValue(item.alive)]]</td>
-                  <td class="center">[[_formatBytes(item.jvmHeapSize)]]</td>
-                  <td class="center">[[_checkValue(item.type)]]</td>
+                  <td class="td-center">[[item.cpuCores]]</td>
+                  <td class="td-center">[[_checkValue(item.created)]]</td>
+                  <td class="td-center">[[_checkValue(item.alive)]]</td>
+                  <td class="td-center">[[_formatBytes(item.jvmHeapSize)]]</td>
+                  <td class="td-center">[[_checkValue(item.type)]]</td>
                 </tr>
               </template>
             </table>

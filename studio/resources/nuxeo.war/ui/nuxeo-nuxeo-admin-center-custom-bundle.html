@@ -135,9 +135,10 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
   </template>
 </nuxeo-slot-content>
 
-<!--
-
-<admin-stream-scale class="actionButton"></admin-stream-scale>
-<div class="actionButton actionInfo">
-  <span class="moreInfo">Info about Streams and the auto-scaling options</span>
-</div> -->
+<!--== Stream Scale =========================================================-->
+<nuxeo-slot-content name="adminCenter_stream-scale"
+                    slot="ADMIN_CENTER">
+  <template>
+    <admin-stream-scale></admin-stream-scale>
+  </template>
+</nuxeo-slot-content>
