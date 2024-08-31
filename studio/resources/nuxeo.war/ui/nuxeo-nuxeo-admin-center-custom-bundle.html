@@ -13,8 +13,6 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
 <link rel="import"
       href="elements/nxpac-health-check.html">
 <link rel="import"
-      href="elements/admin-reindex-repository.html">
-<link rel="import"
       href="elements/admin-recompute-views.html">
 <link rel="import"
       href="elements/admin-recompute-thumbnails.html">
@@ -94,12 +92,18 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
   </template>
 </nuxeo-slot-content>
 
-<!--
+<!--== Reindex ==============================================================-->
+<nuxeo-slot-content name="adminCenter_reindex"
+                    slot="ADMIN_CENTER">
+  <template>
+    <nxpac-basic-action label="nxpac.label.action.reindex-repository"
+                        description="nxpac.label.description.reindex-repository"
+                        operation="Elasticsearch.Index">
+    </nxpac-basic-action>
+  </template>
+</nuxeo-slot-content>
 
-<admin-reindex-repository></admin-reindex-repository>
-<div class="actionInfo">
-  Re-index the whole repository (Elasticsearch index)
-</div>
+<!--
 
 <admin-page-providers class="actionButton"></admin-page-providers>
 <div class="actionButton actionInfo">
