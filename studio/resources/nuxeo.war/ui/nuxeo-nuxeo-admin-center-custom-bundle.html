@@ -39,7 +39,8 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
                         description="nxpac.label.description.download-log"
                         operation="javascript.adminCenter_downloadServerLog"
                         download
-                        async>
+                        async
+                        notification="nxpac.label.notification.download-log">
     </nxpac-basic-action>
   </template>
 </nuxeo-slot-content>
@@ -98,7 +99,8 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
   <template>
     <nxpac-basic-action label="nxpac.label.action.reindex-repository"
                         description="nxpac.label.description.reindex-repository"
-                        operation="Elasticsearch.Index">
+                        operation="Elasticsearch.Index"
+                        notification="nxpac.label.notification.reindex-repository">
     </nxpac-basic-action>
   </template>
 </nuxeo-slot-content>
