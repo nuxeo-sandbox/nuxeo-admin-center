@@ -31,6 +31,8 @@
           <!--== About ========================================================-->
           <nuxeo-card heading="Admin Center Info"
                       class="layout flex"
+                      id="aboutCard"
+                      on-tap="_syncHealthCheckCard"
                       collapsible>
 
             <paper-icon-item>
@@ -74,6 +76,8 @@
           <!--== Health Check ===============================================-->
           <nuxeo-card heading="Nuxeo Server Health Check"
                       class="right"
+                      id="healthCheckCard"
+                      on-tap="_syncAboutCard"
                       collapsible>
             <nxpac-health-check></nxpac-health-check>
           </nuxeo-card>
@@ -95,6 +99,16 @@
       is: 'nuxeo-admin-center',
       behaviors: [Nuxeo.LayoutBehavior],
       properties: {
+      },
+
+      // If the About card is toggled, also toggle the Health Check card.
+      _syncHealthCheckCard: function () {
+        this.$.healthCheckCard.opened = this.$.aboutCard.opened;
+      },
+
+      // If the Health Check card is toggled, also toggle the About card.
+      _syncAboutCard: function () {
+        this.$.aboutCard.opened = this.$.healthCheckCard.opened;
       }
     });
   </script>
