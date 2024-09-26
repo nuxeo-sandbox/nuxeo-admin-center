@@ -1,7 +1,9 @@
-/* WARNING => We try to filter passwords and keys, based on the name of the parameter.
-           => We may miss some custom and let them in clear.
-              See algorithm below (check if a parameter contains "password", "pwd", "key")
+/*
+We try to filter passwords and keys based on the name of the parameter.
 
+WARNING: We may miss some custom values, so they may be sent as clear text.
+
+See algorithm below (check if a parameter contains "password", "pwd", "key")
 */
 function run(input, params) {
   
