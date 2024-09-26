@@ -45,6 +45,20 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
   </template>
 </nuxeo-slot-content>
 
+<!--== ShowConf ===========================================================-->
+<nuxeo-slot-content name="adminCenter_downloadConf"
+                    slot="ADMIN_CENTER">
+  <template>
+    <nxpac-basic-action label="nxpac.label.action.download-conf"
+                        description="nxpac.label.description.download-conf"
+                        operation="javascript.adminCenter_downloadConf"
+                        download
+                        async
+                        notification="nxpac.label.notification.download-conf">
+    </nxpac-basic-action>
+  </template>
+</nuxeo-slot-content>
+
 <!--== Nuxeo Server Info ====================================================-->
 <nuxeo-slot-content name="adminCenter_distribution"
                     slot="ADMIN_CENTER">

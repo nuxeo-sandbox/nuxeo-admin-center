@@ -1,0 +1,7 @@
+<scriptedOperation id="adminCenter_downloadConf" version="1.2">
+  <description></description>
+  <inputType>void</inputType>
+  <outputType>blob</outputType>
+  <category>javascript</category>
+  <disableHelperComments>true</disableHelperComments>
+</scriptedOperation>
