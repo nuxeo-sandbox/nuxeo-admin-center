@@ -4,6 +4,6 @@
     <packages/>
   </targetPlatform>
   <dependencies class="linked-hash-set">
-    <string>nuxeo-web-ui:3.1.2</string>
+    <string>nuxeo-web-ui:3.1.12</string>
   </dependencies>
 </application>
