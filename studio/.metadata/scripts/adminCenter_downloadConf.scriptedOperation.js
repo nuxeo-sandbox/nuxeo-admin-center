@@ -1,9 +1,9 @@
 /*
 We try to filter passwords and keys based on the name of the parameter.
+See algorithm below, it checks if a parameter contains "password", "pwd", "key".
 
 WARNING: We may miss some custom values, so they may be sent as clear text.
 
-See algorithm below (check if a parameter contains "password", "pwd", "key")
 */
 function run(input, params) {
   
