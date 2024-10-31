@@ -13,7 +13,6 @@ function run(input, params) {
   
   logFile = new java.io.File(logPath);
   logBlob = new org.nuxeo.ecm.core.api.impl.blob.FileBlob(logFile);
-  (new Date()).toISOString().replace(/:/g, "-");
   zip = Blob.CreateZip(
     logBlob, {
 	'filename': (new Date()).toISOString().replace(/:/g, "-") + "-server.log.zip"
