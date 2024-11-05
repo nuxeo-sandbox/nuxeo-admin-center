@@ -2,6 +2,8 @@
 
 This project adds administrative functions to [Nuxeo Web UI](https://doc.nuxeo.com/n/y8x) via the [Administration menu](https://doc.nuxeo.com/n/HMi). This interface was created primarily to replace <a href="https://doc.nuxeo.com/n/9CF" target="_blank">Nuxeo JSF UI Admin features</a>, but includes several enhancements as well.
 
+![Nuxeo Admin Center](nuxeo-admin-center.png)
+
 This interface is similar to the [Nuxeo Admin Console](https://doc.nuxeo.com/n/WYr) but is based on Google Polymer and integrates with Nuxeo Web UI.
 
 This repository contains a [Nuxeo Studio](https://doc.nuxeo.com/n/dqH) Project to be used as a [multi-layer](https://doc.nuxeo.com/n/LVQ) dependency. The code is being stored in GitHub using the [External Source Repository](https://doc.nuxeo.com/n/ZB4) feature.
