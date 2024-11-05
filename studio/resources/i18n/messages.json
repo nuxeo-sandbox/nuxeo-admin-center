@@ -34,5 +34,6 @@
   "ldapDirectories": "LDAP Directories",
   "repository": "Repository",
   "runtime": "Runtime",
-  "stream": "Stream"
+  "stream": "Stream",
+  "app.title.admin.admincenter": "Admin Center"
 }
