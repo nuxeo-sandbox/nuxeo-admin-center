@@ -17,9 +17,14 @@
         color: orange;
       }
 
-      /* Make it so cards can wrap */
-      .card-container {
-        height: 500px;
+      /* Cards should not be indented from outer edge. */
+      .card-wrapper {
+        margin-left: -8px;
+        margin-right: -8px;
+      }
+
+      .admin-center-card {
+        min-width: 500px;
       }
     </style>
 
@@ -103,10 +108,35 @@
 
 
         <!--== Actions ======================================================-->
-        <div class="layout flex vertical wrap card-container">
-          <nuxeo-slot slot="ADMIN_CENTER"
-                      model="[[mySlotModel]]">
-          </nuxeo-slot>
+        <div class="layout flex horizontal wrap card-wrapper">
+
+          <nxpac-basic-action heading="nxpac.label.action.download-log"
+                              description="nxpac.label.description.download-log"
+                              operation="javascript.adminCenter_downloadServerLog"
+                              download
+                              async
+                              class="layout flex admin-center-card"
+                              notification="nxpac.label.notification.download-log">
+          </nxpac-basic-action>
+
+          <nxpac-basic-action heading="nxpac.label.action.download-conf"
+                              description="nxpac.label.description.download-conf"
+                              operation="javascript.adminCenter_downloadConf"
+                              download
+                              async
+                              class="layout flex admin-center-card"
+                              notification="nxpac.label.notification.download-conf">
+          </nxpac-basic-action>
+
+          <admin-nuxeo-distribution class="layout flex admin-center-card"></admin-nuxeo-distribution>
+
+          <nxpac-basic-action heading="nxpac.label.action.reindex-repository"
+                              description="nxpac.label.description.reindex-repository"
+                              operation="Elasticsearch.Index"
+                              class="layout flex admin-center-card"
+                              notification="nxpac.label.notification.reindex-repository">
+          </nxpac-basic-action>
+
         </div>
 
       </div>

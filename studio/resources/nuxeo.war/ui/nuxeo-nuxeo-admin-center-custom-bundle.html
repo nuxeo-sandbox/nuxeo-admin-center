@@ -67,7 +67,8 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
 <nuxeo-slot-content name="adminCenter_reindex"
                     slot="ADMIN_CENTER">
   <template>
-    <nxpac-basic-action heading="nxpac.label.action.reindex-repository"
+    <nxpac-basic-action class="layout flex"
+                        heading="nxpac.label.action.reindex-repository"
                         description="nxpac.label.description.reindex-repository"
                         operation="Elasticsearch.Index"
                         notification="nxpac.label.notification.reindex-repository">

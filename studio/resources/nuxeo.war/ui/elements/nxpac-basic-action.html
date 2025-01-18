@@ -34,8 +34,9 @@ an area to display a description for that button.
       }
 
       .admin-center-card {
-        max-width: 500px;
         min-width: 500px;
+        margin-left: 8px;
+        margin-right: 8px;
       }
     </style>
 
@@ -47,9 +48,9 @@ an area to display a description for that button.
     </iron-ajax>
 
     <paper-card heading="[[i18n(heading)]]"
-                class="admin-center-card">
+                class="layout flex admin-center-card">
 
-      <div class="card-content">[[i18n(description)]]</div>
+      <div class="card-content limit">[[i18n(description)]]</div>
       <div class="card-actions">
 
         <!-- Only show if using an operation. -->
