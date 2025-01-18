@@ -10,8 +10,32 @@ an area to display a description for that button.
 <dom-module id="nxpac-basic-action">
   <template>
     <style include="iron-flex iron-flex-alignment nuxeo-styles">
-      .displayed-to-right {
-        margin-left: 10px
+      /*
+      ** Set back to default values.
+      ** These are overridden in themes/base.html
+      */
+      paper-card {
+        padding: 0;
+        border-radius: 2px;
+
+        --paper-card-content: {
+          padding-top: 0;
+        }
+
+        ;
+
+        /* Match nuxeo-card */
+        --paper-card-header-text: {
+          font-size: 14px;
+          font-weight: 700;
+        }
+
+        ;
+      }
+
+      .admin-center-card {
+        max-width: 500px;
+        min-width: 500px;
       }
     </style>
 
@@ -22,8 +46,11 @@ an area to display a description for that button.
                on-error="_handleIronAjaxError">
     </iron-ajax>
 
-    <nuxeo-card>
-      <div class="layout horizontal center">
+    <paper-card heading="[[i18n(heading)]]"
+                class="admin-center-card">
+
+      <div class="card-content">[[i18n(description)]]</div>
+      <div class="card-actions">
 
         <!-- Only show if using an operation. -->
         <nxpac-nuxeo-operation-button hidden$="[[!operation]]"
@@ -49,10 +76,9 @@ an area to display a description for that button.
           [[i18n(label)]]
         </paper-button>
 
-        <div class="layout flex displayed-to-right">[[i18n(description)]]</div>
-
       </div>
-    </nuxeo-card>
+
+    </paper-card>
 
   </template>
 
@@ -162,9 +188,17 @@ an area to display a description for that button.
         },
 
         /**
+        * Heading for the card.
+        */
+        heading: String,
+
+        /**
         * Label for the action button.
         */
-        label: String,
+        label: {
+          type: String,
+          value: "Execute"
+        },
 
         /**
         * Description for the action.

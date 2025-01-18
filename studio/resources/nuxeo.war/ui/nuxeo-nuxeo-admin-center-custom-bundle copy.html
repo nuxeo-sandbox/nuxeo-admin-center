@@ -63,6 +63,46 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
   </template>
 </nuxeo-slot-content>
 
+<!--== Orphaned Binaries ====================================================-->
+<nuxeo-slot-content name="adminCenter_orphanedBinaries"
+                    slot="ADMIN_CENTER">
+  <template>
+    <admin-orphaned-binaries></admin-orphaned-binaries>
+  </template>
+</nuxeo-slot-content>
+
+<!--== Probes ===============================================================-->
+<nuxeo-slot-content name="adminCenter_probes"
+                    slot="ADMIN_CENTER">
+  <template>
+    <admin-nuxeo-probes></admin-nuxeo-probes>
+  </template>
+</nuxeo-slot-content>
+
+<!--== Picture Views ========================================================-->
+<nuxeo-slot-content name="adminCenter_recompute-views"
+                    slot="ADMIN_CENTER">
+  <template>
+    <admin-recompute-views></admin-recompute-views>
+  </template>
+</nuxeo-slot-content>
+
+<!--== Thumbnails ===========================================================-->
+<nuxeo-slot-content name="adminCenter_recompute-thumbnails"
+                    slot="ADMIN_CENTER">
+  <template>
+    <admin-recompute-thumbnails></admin-recompute-thumbnails>
+  </template>
+</nuxeo-slot-content>
+
+<!--== Videos ===============================================================-->
+<nuxeo-slot-content name="adminCenter_recompute-videos"
+                    slot="ADMIN_CENTER">
+  <template>
+    <admin-recompute-videos></admin-recompute-videos>
+  </template>
+</nuxeo-slot-content>
+
 <!--== Reindex ==============================================================-->
 <nuxeo-slot-content name="adminCenter_reindex"
                     slot="ADMIN_CENTER">
@@ -72,6 +112,14 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
                         operation="Elasticsearch.Index"
                         notification="nxpac.label.notification.reindex-repository">
     </nxpac-basic-action>
+  </template>
+</nuxeo-slot-content>
+
+<!--== Page Providers =======================================================-->
+<nuxeo-slot-content name="adminCenter_page-providers"
+                    slot="ADMIN_CENTER">
+  <template>
+    <admin-page-providers></admin-page-providers>
   </template>
 </nuxeo-slot-content>
 
@@ -99,3 +147,10 @@ Use this file to put any custom code you want to deploy on top of Studio's autom
   </template>
 </nuxeo-slot-content>
 
+<!--== Stream Scale =========================================================-->
+<nuxeo-slot-content name="adminCenter_stream-scale"
+                    slot="ADMIN_CENTER">
+  <template>
+    <admin-stream-scale></admin-stream-scale>
+  </template>
+</nuxeo-slot-content>

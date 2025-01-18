@@ -16,6 +16,11 @@
       .warning {
         color: orange;
       }
+
+      /* Make it so cards can wrap */
+      .card-container {
+        height: 500px;
+      }
     </style>
 
     <nuxeo-page>
@@ -96,10 +101,13 @@
 
         </div>
 
+
         <!--== Actions ======================================================-->
-        <nuxeo-slot slot="ADMIN_CENTER"
-                    model="[[mySlotModel]]">
-        </nuxeo-slot>
+        <div class="layout flex vertical wrap card-container">
+          <nuxeo-slot slot="ADMIN_CENTER"
+                      model="[[mySlotModel]]">
+          </nuxeo-slot>
+        </div>
 
       </div>
 
